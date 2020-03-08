@@ -1,10 +1,14 @@
-# Mister Mail
+# <span style="margin-right:10px">👨🏻‍✈️</span> Mister Mail
 
 Friendly mass mailer.
 
 ## Architecture
 
-<iframe src="https://drive.google.com/file/d/12FSTrMZs5HWeGkN_7h481OHAxGHd0cRv/preview" width="640" height="480"></iframe>
+More or less how the first iteration will look like.
+
+<a href="https://drive.google.com/file/d/12FSTrMZs5HWeGkN_7h481OHAxGHd0cRv/view?usp=sharing">
+<img src="https://drive.google.com/uc?id=138IUPNBW1qQiVg3A7H-KXqKreirysQYI" width="640"></img>
+</a>
 
 ## Setup
 
