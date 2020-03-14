@@ -1,0 +1,8 @@
+{
+  "Template": {
+    "TemplateName": "StandardTemplate",
+    "SubjectPart": "{{subject}}",
+    "HtmlPart": "<h1>Hello {{recipient}},</h1><p>{{originator}} has a question for you: <b>{{questionText}}<b></p>{{choices}}",
+    "TextPart": "Hello {{recipient}},\n\n{{originator}} has a question for you: {{questionText}}\n"
+  }
+}

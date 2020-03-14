@@ -3,6 +3,7 @@
   "include": [
     "*.js",
     "types/*.ts",
+    "lib/*.ts",
     "services/api/*.ts",
   ],
   "compilerOptions": {
