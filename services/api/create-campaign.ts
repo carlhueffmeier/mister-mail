@@ -7,6 +7,7 @@ import {
 } from './campaign-repository';
 import { APIGatewayProxyEvent } from 'aws-lambda';
 import { getConfig } from './config';
+import { getUserId } from '../../lib/auth-utils';
 import 'source-map-support/register';
 
 const campaignRepository = new CampaignRepository({
@@ -28,12 +29,6 @@ const inputSchema = {
     },
   },
 };
-
-function getUserId(event: APIGatewayProxyEvent): string {
-  const userId = event?.requestContext?.authorizer?.claims.sub;
-  Log.debug('Got userId', { userId });
-  return userId;
-}
 
 interface RequestBody {
   name: string;
