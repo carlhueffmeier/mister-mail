@@ -21,7 +21,7 @@ const inputSchema = {
   properties: {
     body: {
       type: 'object',
-      required: ['name'],
+      required: ['name', 'questionText'],
       properties: {
         name: { type: 'string' },
         questionText: { type: 'string' },
