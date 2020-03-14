@@ -23,3 +23,18 @@ To deploy the application, simply run
 ```bash
 npm run deploy
 ```
+
+## DynamoDB Schema
+
+| PK      | SK   | Content                           |
+| ------- | ---- | --------------------------------- |
+| User Id | user | User data                         |
+|         | C-1  | Campaign data for campaign (id=1) |
+
+### Access Patterns
+
+| Get           | By                    | Using              |
+| ------------- | --------------------- | ------------------ |
+| User Data     | User Id               | Query PK+SK        |
+| All campaigns | User Id               | Query PK+SK prefix |
+| Campaign      | User Id + Campaign Id | Query PK+SK        |

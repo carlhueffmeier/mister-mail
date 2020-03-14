@@ -1,13 +1,20 @@
 service:
   name: mister-mail
 
+plugins:
+  - serverless-webpack
+  - serverless-pseudo-parameters
+
 custom:
   webpack:
     webpackConfig: ./webpack.config.js
-    includeModules: true
-
-plugins:
-  - serverless-webpack
+    includeModules:
+      forceExclude:
+        - "aws-sdk"
+        - "@types/aws-lambda"
+  stage: ${opt:stage, self:provider.stage}
+  region: ${opt:region, self:provider.region}
+  campaign-table: ${self:service}-${self:custom.stage}
 
 provider:
   name: aws
@@ -16,11 +23,33 @@ provider:
     minimumCompressionSize: 1024 # Enable gzip compression for responses > 1 KB
   environment:
     AWS_NODEJS_CONNECTION_REUSE_ENABLED: 1
+    DYNAMODB_CAMPAIGN_TABLE: ${self:custom.campaign-table}
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource:
+        - "arn:aws:dynamodb:${self:custom.region}:#{AWS::AccountId}:table/${self:custom.campaign-table}"
 
 functions:
-  hello:
-    handler: src/handler.hello
+  create-campaign:
+    handler: services/api/create-campaign.handler
     events:
       - http:
-          method: get
-          path: hello
+          method: post
+          path: create
+          cors: true
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId:
+              Ref: CognitoAuthorizer
+
+resources:
+  - ${file(resources/cognito-user-pool.yml)}
+  - ${file(resources/cognito-identity-pool.yml)}
+  - ${file(resources/dynamodb.yml)}

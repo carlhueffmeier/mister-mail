@@ -24,6 +24,7 @@
   },
   "include": ["./**/*.ts"],
   "exclude": [
+    "services/web-client",
     "node_modules/**/*",
     ".serverless/**/*",
     ".webpack/**/*",
