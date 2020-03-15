@@ -1,6 +1,4 @@
-enum EnvKey {
-  DYNAMODB_CAMPAIGN_TABLE = 'DYNAMODB_CAMPAIGN_TABLE',
-}
+import { EnvKey } from './config.types';
 
 function getFromEnv(key: string): string {
   const value = process.env[key];
@@ -10,6 +8,7 @@ function getFromEnv(key: string): string {
   return value;
 }
 
+export * from './config.types';
 export function getConfig(): Record<EnvKey, string> {
   return Object.values(EnvKey).reduce(
     (env: Record<string, string>, name: string) => {

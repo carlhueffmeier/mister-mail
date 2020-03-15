@@ -4,7 +4,7 @@
     "*.js",
     "types/*.ts",
     "lib/*.ts",
-    "services/api/*.ts",
+    "services/api/**/*.ts",
   ],
   "compilerOptions": {
     "allowJs": true,

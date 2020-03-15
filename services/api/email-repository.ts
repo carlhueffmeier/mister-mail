@@ -1,13 +1,13 @@
-import * as uuid from 'uuid';
 import { DynamoDB } from 'aws-sdk';
 import Log from '@dazn/lambda-powertools-logger';
 import {
-  CreateCampaignRequest,
-  CampaignDynamoDbRecord,
-} from './campaign-repository.types';
-export * from './campaign-repository.types';
+  EmailStatus,
+  Email,
+  EmailDynamoDbRecord,
+} from './email-repository.types';
 
-export class CampaignRepository {
+export * from './email-repository.types';
+export class EmailRepository {
   dynamoDbDocumentClient: DynamoDB.DocumentClient;
   tableName: string;
   logger: Log;
@@ -22,27 +22,26 @@ export class CampaignRepository {
     this.logger = options.logger;
   }
 
-  async create(
-    createData: Readonly<CreateCampaignRequest>,
-  ): Promise<CampaignDynamoDbRecord> {
+  async create(createData: Readonly<Email>): Promise<EmailDynamoDbRecord> {
     const timestamp = Date.now();
-    const id = uuid.v1();
-    const newItem: CampaignDynamoDbRecord = {
-      pk: createData.uid,
-      sk: `C-${id}`,
-      id: id,
-      uid: createData.uid,
+    const newItem: EmailDynamoDbRecord = {
+      pk: createData.messageId,
+      sk: `mail`,
+      messageId: createData.messageId,
       created: timestamp,
       updated: timestamp,
-      name: createData.name,
-      questionText: createData.questionText,
+      status: createData.status,
     };
     const putParams: DynamoDB.DocumentClient.PutItemInput = {
       TableName: this.tableName,
       Item: newItem,
     };
-    this.logger.debug('Creating new campaign', { createData, putParams });
+    this.logger.debug('Creating new email record', { createData, putParams });
     await this.dynamoDbDocumentClient.put(putParams).promise();
     return newItem;
+  }
+
+  async updateStatus(_messageId: string, _status: EmailStatus): Promise<void> {
+    // TODO
   }
 }

@@ -6,6 +6,9 @@ import {
 } from 'aws-lambda';
 import { handler } from './create-campaign';
 
+jest.mock('./config');
+jest.mock('./campaign-repository');
+
 describe('services/api/create-campaign.ts', () => {
   describe('given valid body', () => {
     const createCampaignRequest = {
@@ -19,10 +22,9 @@ describe('services/api/create-campaign.ts', () => {
         body,
         headers: { 'content-type': 'application/json' },
       } as unknown) as APIGatewayProxyEvent;
-      const context: Context = {} as Context;
       const callback: jest.Mock<Callback<APIGatewayProxyResult>> = jest.fn();
 
-      await handler(event, context, callback);
+      await handler(event, {} as Context, callback);
 
       expect(callback).toHaveBeenCalledTimes(1);
       expect(callback).toHaveBeenCalledWith(

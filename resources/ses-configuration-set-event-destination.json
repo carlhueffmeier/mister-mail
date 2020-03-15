@@ -1,0 +1,19 @@
+{
+  "ConfigurationSetName": "{{ConfigurationSetName}}",
+  "EventDestination": {
+    "Name": "AllEventsSnsEventDestination",
+    "Enabled": true,
+    "MatchingEventTypes": [
+      "bounce",
+      "complaint",
+      "delivery",
+      "open",
+      "reject",
+      "renderingFailure",
+      "send"
+    ],
+    "SNSDestination": {
+      "TopicARN": "{{TopicARN}}"
+    }
+  }
+}

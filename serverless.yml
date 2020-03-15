@@ -15,6 +15,8 @@ custom:
   stage: ${opt:stage, self:provider.stage}
   region: ${opt:region, self:provider.region}
   campaign-table: ${self:service}-${self:custom.stage}
+  ses-configuration-set: ${self:service}-${self:custom.stage}
+  ses-email-events-topic: ${self:service}-${self:custom.stage}-ses-email-events
 
 provider:
   name: aws
@@ -49,7 +51,13 @@ functions:
             authorizerId:
               Ref: CognitoAuthorizer
 
+  on-email-event:
+    handler: services/api/on-email-event.handler
+    events:
+      - sns: ${self:ses-email-events-topic}
+
 resources:
   - ${file(resources/cognito-user-pool.yml)}
   - ${file(resources/cognito-identity-pool.yml)}
   - ${file(resources/dynamodb.yml)}
+  - ${file(resources/ses.yml)}

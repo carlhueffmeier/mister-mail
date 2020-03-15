@@ -7,7 +7,13 @@ import sampleLoggingMiddleware from '@dazn/lambda-powertools-middleware-sample-l
 import correlationIdsMiddleware from '@dazn/lambda-powertools-middleware-correlation-ids';
 import logTimeoutMiddleware from '@dazn/lambda-powertools-middleware-log-timeout';
 import Log from '@dazn/lambda-powertools-logger';
-import { Handler } from 'aws-lambda';
+import {
+  Handler,
+  APIGatewayProxyEvent,
+  APIGatewayProxyResult,
+  SNSHandler,
+  SNSEvent,
+} from 'aws-lambda';
 import { HttpError } from 'http-errors';
 import { Options as AjvOptions } from 'ajv';
 
@@ -30,10 +36,10 @@ export function addCommons<T, R>(handler: Handler<T, R>): middy.Middy<T, R> {
     .use(logTimeoutMiddleware());
 }
 
-export function wrapHttpHandler<T, R>(
-  handler: Handler<T, R>,
-  validatorOptions?: ValidatorOptions | undefined,
-): middy.Middy<T, R> {
+export function wrapHttpHandler(
+  handler: Handler<APIGatewayProxyEvent, APIGatewayProxyResult | void>,
+  validatorOptions?: ValidatorOptions,
+): middy.Middy<APIGatewayProxyEvent, APIGatewayProxyResult | void> {
   return addCommons(handler)
     .use(jsonBodyParserMiddleware())
     .use(validatorOptions ? validator(validatorOptions) : nullMiddleware())
@@ -44,4 +50,13 @@ export function wrapHttpHandler<T, R>(
       }),
     )
     .use(corsMiddleware());
+}
+
+export function wrapSnsHandler(
+  handler: SNSHandler,
+  validatorOptions?: ValidatorOptions,
+): middy.Middy<SNSEvent, void> {
+  return addCommons(handler).use(
+    validatorOptions ? validator(validatorOptions) : nullMiddleware(),
+  );
 }

@@ -4,8 +4,7 @@ import Log from '@dazn/lambda-powertools-logger';
 import {
   CreateCampaignRequest,
   CampaignDynamoDbRecord,
-} from './campaign-repository.types';
-export * from './campaign-repository.types';
+} from '../campaign-repository.types';
 
 export class CampaignRepository {
   dynamoDbDocumentClient: DynamoDB.DocumentClient;
@@ -37,12 +36,6 @@ export class CampaignRepository {
       name: createData.name,
       questionText: createData.questionText,
     };
-    const putParams: DynamoDB.DocumentClient.PutItemInput = {
-      TableName: this.tableName,
-      Item: newItem,
-    };
-    this.logger.debug('Creating new campaign', { createData, putParams });
-    await this.dynamoDbDocumentClient.put(putParams).promise();
     return newItem;
   }
 }

@@ -1,11 +1,13 @@
 import Log from '@dazn/lambda-powertools-logger';
-import { wrapHttpHandler } from './middleware';
 import DynamoDb from '@dazn/lambda-powertools-dynamodb-client';
+import { CampaignRepository } from './campaign-repository';
+import { CreateCampaignRequest } from './campaign-repository.types';
 import {
-  CampaignRepository,
-  CreateCampaignRequest,
-} from './campaign-repository';
-import { APIGatewayProxyEvent } from 'aws-lambda';
+  APIGatewayProxyEvent,
+  Context,
+  APIGatewayProxyCallback,
+} from 'aws-lambda';
+import { wrapHttpHandler } from './middleware';
 import { getConfig } from './config';
 import { getUserId } from '../../lib/auth-utils';
 import 'source-map-support/register';
@@ -36,20 +38,24 @@ interface RequestBody {
 }
 
 const handler = wrapHttpHandler(
-  async (event: APIGatewayProxyEvent, _context, _cb) => {
+  async (
+    event: APIGatewayProxyEvent,
+    _context: Context,
+    callback: APIGatewayProxyCallback,
+  ): Promise<void> => {
     Log.debug('Received event', { event });
     const requestBody = (event.body as unknown) as RequestBody;
-    const userId = getUserId(event);
+    const uid = getUserId(event);
     const createRequest: CreateCampaignRequest = {
-      userId,
+      uid,
       ...requestBody,
     };
     const result = await campaignRepository.create(createRequest);
 
-    return {
+    callback(null, {
       statusCode: 200,
       body: JSON.stringify({ message: 'Mister mail, at your service', result }),
-    };
+    });
   },
 
   { inputSchema },

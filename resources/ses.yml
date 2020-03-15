@@ -1,0 +1,18 @@
+Resources:
+  SesConfigurationSet:
+    Type: AWS::SES::ConfigurationSet
+    Properties:
+      Name: ${self:custom.ses-configuration-set}
+  SesEmailEventsTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      TopicName: ${self:custom.ses-email-events-topic}
+
+Outputs:
+  SesConfigurationSet:
+    Value:
+      Ref: SesConfigurationSet
+
+  SesEmailEventsTopic:
+    Value:
+      Ref: SesEmailEventsTopic
