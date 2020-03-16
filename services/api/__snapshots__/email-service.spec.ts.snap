@@ -1,0 +1,47 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`EmailService sendEmail given valid request should save the email 1`] = `
+Array [
+  Array [
+    Object {
+      "messageId": "abc",
+      "status": "Sent",
+    },
+  ],
+  Array [
+    Object {
+      "messageId": "abc",
+      "status": "Sent",
+    },
+  ],
+]
+`;
+
+exports[`EmailService sendEmail given valid request should send the email 1`] = `
+Array [
+  Array [
+    Object {
+      "ConfigurationSetName": "configurationSet",
+      "Destination": Object {
+        "ToAddresses": Array [
+          "destination",
+        ],
+      },
+      "Message": Object {
+        "Body": Object {
+          "Html": Object {
+            "Data": "html",
+          },
+          "Text": Object {
+            "Data": "text",
+          },
+        },
+        "Subject": Object {
+          "Data": "subject",
+        },
+      },
+      "Source": "source",
+    },
+  ],
+]
+`;
