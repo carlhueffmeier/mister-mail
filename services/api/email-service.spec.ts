@@ -2,6 +2,7 @@ import AWS from 'aws-sdk';
 import { EmailService } from './email-service';
 import { SendEmailRequest } from './email-service.types';
 import { EmailRepository } from './email-repository';
+import Log from '@dazn/lambda-powertools-logger';
 
 describe('EmailService', () => {
   const fakeEmailRepository = ({
@@ -9,6 +10,7 @@ describe('EmailService', () => {
   } as unknown) as EmailRepository;
   const fakeSes = ({ sendEmail: jest.fn() } as unknown) as AWS.SES;
   const configurationSet = 'configurationSet';
+  const emailTopicArn = 'arn';
 
   describe('sendEmail', () => {
     describe('given valid request', () => {
@@ -20,11 +22,13 @@ describe('EmailService', () => {
         destination: 'destination',
       };
       it('should send the email', async () => {
-        const service = new EmailService(
-          fakeSes,
-          fakeEmailRepository,
+        const service = new EmailService({
+          ses: fakeSes,
+          emailRepository: fakeEmailRepository,
           configurationSet,
-        );
+          emailTopicArn,
+          logger: ({ debug: jest.fn() } as unknown) as Log,
+        });
         const fakeResponse = {
           async promise(): Promise<AWS.SES.SendEmailResponse> {
             return { MessageId: 'abc' } as AWS.SES.SendEmailResponse;
@@ -38,11 +42,13 @@ describe('EmailService', () => {
       });
 
       it('should save the email', async () => {
-        const service = new EmailService(
-          fakeSes,
-          fakeEmailRepository,
+        const service = new EmailService({
+          ses: fakeSes,
+          emailRepository: fakeEmailRepository,
           configurationSet,
-        );
+          emailTopicArn,
+          logger: ({ debug: jest.fn() } as unknown) as Log,
+        });
         const fakeResponse = {
           async promise(): Promise<AWS.SES.SendEmailResponse> {
             return { MessageId: 'abc' } as AWS.SES.SendEmailResponse;

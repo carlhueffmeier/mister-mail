@@ -26,7 +26,7 @@ export class CampaignRepository {
   ): Promise<CampaignDynamoDbRecord> {
     const timestamp = Date.now();
     const id = uuid.v1();
-    const newItem: CampaignDynamoDbRecord = {
+    const newItem = {
       pk: createData.uid,
       sk: `C-${id}`,
       id: id,
@@ -35,7 +35,7 @@ export class CampaignRepository {
       updated: timestamp,
       name: createData.name,
       questionText: createData.questionText,
-    };
+    } as CampaignDynamoDbRecord;
     return newItem;
   }
 }

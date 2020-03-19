@@ -60,6 +60,12 @@ function App() {
   const createCampaignRequest = {
     name: 'Camping trip',
     questionText: 'Do you want to join?',
+    destinations: [
+      {
+        name: 'Dogbert',
+        email: 'carlhueffmeier@gmail.com'
+      }
+    ]
   };
 
   return (

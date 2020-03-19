@@ -1,6 +1,7 @@
-import { SNSEvent, Context, Callback } from 'aws-lambda';
+import { SNSEvent, Context } from 'aws-lambda';
 import { handler } from './on-email-event';
 import emailDeliveredEvent from './test-data/ses-email-delivered.json';
+import { promisifyHandler } from '../../lib/test-utils';
 
 jest.mock('./config');
 
@@ -14,9 +15,7 @@ describe('services/api/on-email-event.ts', () => {
 
     it('should not throw an error', async () => {
       const context: Context = {} as Context;
-      const callback: jest.Mock<Callback<void>> = jest.fn();
-
-      await handler(event, context, callback);
+      await promisifyHandler(handler)(event, context);
     });
   });
 });

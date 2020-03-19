@@ -2,20 +2,27 @@ import AWS from 'aws-sdk';
 import { Email, EmailStatus } from './email-repository.types';
 import { EmailRepository } from './email-repository';
 import { SendEmailRequest } from './email-service.types';
+import Log from '@dazn/lambda-powertools-logger';
 
 export class EmailService {
   private ses: AWS.SES;
   private emailRepository: EmailRepository;
   private configurationSet: string;
+  private emailTopicArn: string;
+  private logger: Log;
 
-  constructor(
-    ses: AWS.SES,
-    emailRepository: EmailRepository,
-    configurationSet: string,
-  ) {
-    this.ses = ses;
-    this.emailRepository = emailRepository;
-    this.configurationSet = configurationSet;
+  constructor(args: {
+    ses: AWS.SES;
+    emailRepository: EmailRepository;
+    configurationSet: string;
+    emailTopicArn: string;
+    logger: Log;
+  }) {
+    this.ses = args.ses;
+    this.emailRepository = args.emailRepository;
+    this.configurationSet = args.configurationSet;
+    this.emailTopicArn = args.emailTopicArn;
+    this.logger = args.logger;
   }
 
   async sendEmail(request: SendEmailRequest): Promise<Email> {
@@ -32,13 +39,58 @@ export class EmailService {
       ConfigurationSetName: this.configurationSet,
       Message: message,
     };
+    this.logger.debug('Making SES request to send email', { sesRequest });
+
     const result = await this.ses.sendEmail(sesRequest).promise();
     const error = result.$response?.error;
     const email: Email = {
       messageId: result.MessageId,
       status: !error ? EmailStatus.Sent : EmailStatus.Failed,
     };
+
     await this.emailRepository.create(email);
+
     return email;
+  }
+
+  async initializeEventDestinations(): Promise<void> {
+    this.logger.debug('Initializing event destinations');
+    const info = await this.ses
+      .describeConfigurationSet({
+        ConfigurationSetName: this.configurationSet,
+        ConfigurationSetAttributeNames: ['eventDestinations'],
+      })
+      .promise();
+    this.logger.debug('Received current event destinations', { info });
+    const exists = info.EventDestinations?.some(
+      eventDestination =>
+        eventDestination.SNSDestination?.TopicARN === this.emailTopicArn,
+    );
+    if (exists) {
+      this.logger.debug('Exists returning');
+      return;
+    }
+    const result = await this.ses
+      .createConfigurationSetEventDestination({
+        ConfigurationSetName: this.configurationSet,
+        EventDestination: {
+          Name: 'AllEventsSnsEventDestination',
+          Enabled: true,
+          MatchingEventTypes: [
+            'bounce',
+            'complaint',
+            'delivery',
+            'open',
+            'reject',
+            'renderingFailure',
+            'send',
+          ],
+          SNSDestination: {
+            TopicARN: this.emailTopicArn,
+          },
+        },
+      })
+      .promise();
+    this.logger.debug('Finished setting up SNS event destination', { result });
   }
 }

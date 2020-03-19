@@ -1,19 +1,29 @@
-import {
-  APIGatewayProxyEvent,
-  Context,
-  Callback,
-  APIGatewayProxyResult,
-} from 'aws-lambda';
+import { APIGatewayProxyEvent, Context } from 'aws-lambda';
 import { handler } from './create-campaign';
+import { promisifyHandler } from '../../lib/test-utils';
 
 jest.mock('./config');
 jest.mock('./campaign-repository');
+jest.mock('@dazn/lambda-powertools-sns-client', () => {
+  const snsResponse = {
+    promise: jest.fn().mockResolvedValue(null),
+  };
+  return {
+    publish: jest.fn().mockReturnValue(snsResponse),
+  };
+});
 
 describe('services/api/create-campaign.ts', () => {
   describe('given valid body', () => {
     const createCampaignRequest = {
       name: 'Camping trip',
       questionText: 'Do you want to join?',
+      destinations: [
+        {
+          name: 'Dogbert',
+          email: 'dog@bert.com',
+        },
+      ],
     };
     const body = JSON.stringify(createCampaignRequest, null, 2);
 
@@ -22,15 +32,10 @@ describe('services/api/create-campaign.ts', () => {
         body,
         headers: { 'content-type': 'application/json' },
       } as unknown) as APIGatewayProxyEvent;
-      const callback: jest.Mock<Callback<APIGatewayProxyResult>> = jest.fn();
 
-      await handler(event, {} as Context, callback);
+      const result = await promisifyHandler(handler)(event, {} as Context);
 
-      expect(callback).toHaveBeenCalledTimes(1);
-      expect(callback).toHaveBeenCalledWith(
-        null,
-        expect.objectContaining({ statusCode: 200 }),
-      );
+      expect(result).toEqual(expect.objectContaining({ statusCode: 200 }));
     });
   });
 });

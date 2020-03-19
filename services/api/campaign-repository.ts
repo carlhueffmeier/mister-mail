@@ -35,7 +35,9 @@ export class CampaignRepository {
       created: timestamp,
       updated: timestamp,
       name: createData.name,
+      from: createData.from,
       questionText: createData.questionText,
+      destinations: createData.destinations,
     };
     const putParams: DynamoDB.DocumentClient.PutItemInput = {
       TableName: this.tableName,

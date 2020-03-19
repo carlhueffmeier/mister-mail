@@ -6,3 +6,9 @@ export function getUserId(event: APIGatewayProxyEvent): string {
   Log.debug('Got uid', { uid });
   return uid;
 }
+
+export function getUserEmail(_event: APIGatewayProxyEvent): string {
+  // TODO: Get from event or use Cognito API
+  Log.debug('Faking a user email...');
+  return 'carlhueffmeier@gmail.com';
+}
