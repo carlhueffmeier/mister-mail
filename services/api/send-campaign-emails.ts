@@ -20,12 +20,10 @@ const emailService = new EmailService({
   ses: new AWS.SES(),
   emailRepository,
   configurationSet: getConfig().SES_CONFIGURATION_SET,
-  emailTopicArn: getConfig().SES_EMAIL_EVENTS_TOPIC_ARN,
+  emailTopicArn: getConfig().SNS_CAMPAIGNS_TOPIC_ARN,
   logger: Log,
 });
 
-// See the SES Developer Guide for the event schema
-// https://docs.aws.amazon.com/ses/latest/DeveloperGuide/notification-contents.html
 const inputSchema = {
   properties: {
     Records: {
@@ -33,16 +31,35 @@ const inputSchema = {
       items: {
         type: 'object',
         properties: {
-          notificationType: {
-            type: 'string',
-            enum: ['Bounce', 'Complaint', 'Delivery'],
-          },
-          mail: {
+          Sns: {
             type: 'object',
-            required: ['messageId', 'destination'],
             properties: {
-              messageId: { type: 'string' },
-              destination: { type: 'array', items: { type: 'string' } },
+              Message: {
+                type: 'object',
+                properties: {
+                  name: { const: 'CampaignCreatedEvent' },
+                  timestamp: { type: 'number' },
+                  campaign: {
+                    type: 'object',
+                    properties: {
+                      name: { type: 'string' },
+                      questionText: { type: 'string' },
+                      destinations: {
+                        type: 'array',
+                        maxItems: 10, // As longs as it's a for loop..
+                        items: {
+                          type: 'object',
+                          required: ['name', 'email'],
+                          properties: {
+                            name: { type: 'string' },
+                            email: { type: 'string' },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
             },
           },
         },
@@ -70,7 +87,8 @@ async function sendEmail(
 const handler = wrapSnsHandler(
   async (event: SNSEvent, _context, _cb) => {
     Log.debug('Received event', { event });
-    const { campaign } = (event.Records[0] as unknown) as CampaignCreatedEvent;
+    const { campaign } = (event.Records[0].Sns
+      .Message as unknown) as CampaignCreatedEvent;
     Log.debug(`Sending email to ${campaign.destinations}`);
     for (const destination of campaign.destinations) {
       await sendEmail(

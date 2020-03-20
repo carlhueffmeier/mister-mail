@@ -3,7 +3,7 @@
       Type: AWS::DynamoDB::Table
       DeletionPolicy: Retain
       Properties:
-        TableName: ${self:custom.campaign-table}
+        TableName: ${self:custom.campaigns-table}
         AttributeDefinitions:
           - AttributeName: pk
             AttributeType: S

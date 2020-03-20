@@ -43,9 +43,13 @@ export class EmailService {
 
     const result = await this.ses.sendEmail(sesRequest).promise();
     const error = result.$response?.error;
+    if (error) {
+      this.logger.error('Error sending email', { error });
+      throw new Error(`Error sending email: ${error.message}`);
+    }
     const email: Email = {
       messageId: result.MessageId,
-      status: !error ? EmailStatus.Sent : EmailStatus.Failed,
+      status: EmailStatus.Sent,
     };
 
     await this.emailRepository.create(email);

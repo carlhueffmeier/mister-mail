@@ -1,0 +1,19 @@
+{
+  "name": "CampaignCreatedEvent",
+  "timestamp": 1584731745715,
+  "campaign": {
+    "id": "bba47a0d-a248-4d62-b76e-d7c12d87faf8",
+    "uid": "802f6c60-6ac3-11ea-a8db-f586c69b77dd",
+    "created": 1584731745715,
+    "updated": 1584731745715,
+    "name": "Camping Campaign",
+    "from": "carlhueffmeier@gmail.com",
+    "questionText": "Want to come camping?",
+    "destinations": [
+      {
+        "name": "Dogbert",
+        "email": "dog@bert.com"
+      }
+    ]
+  }
+}

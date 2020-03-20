@@ -1,9 +1,11 @@
 import { SNSEvent, Context } from 'aws-lambda';
-import { handler } from './on-email-event';
-import emailDeliveredEvent from './test-data/ses-email-delivered.json';
+import { handler } from './send-campaign-emails';
+import campaignCreatedEvent from './test-data/campaign-created-event.json';
 import { promisifyHandler } from '../../lib/test-utils';
 
 jest.mock('./config');
+jest.mock('./email-repository');
+jest.mock('./email-service');
 
 function snsEventFromSesEvent(snsEventData: unknown): Readonly<SNSEvent> {
   return ({
@@ -11,9 +13,9 @@ function snsEventFromSesEvent(snsEventData: unknown): Readonly<SNSEvent> {
   } as unknown) as SNSEvent;
 }
 
-describe('on-email-event', () => {
+describe('send-campaign-emails', () => {
   describe('given event type "Delivery"', () => {
-    const event = snsEventFromSesEvent(emailDeliveredEvent);
+    const event = snsEventFromSesEvent(campaignCreatedEvent);
 
     it('should not throw an error', async () => {
       const context: Context = {} as Context;

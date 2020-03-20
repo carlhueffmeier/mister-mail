@@ -13,8 +13,10 @@ import {
   APIGatewayProxyResult,
   SNSHandler,
   SNSEvent,
+  Context,
+  SNSEventRecord,
 } from 'aws-lambda';
-import { HttpError } from 'http-errors';
+import createError, { HttpError } from 'http-errors';
 import { Options as AjvOptions } from 'ajv';
 
 export interface ValidatorOptions {
@@ -26,6 +28,26 @@ export interface ValidatorOptions {
 function nullMiddleware<T, R>(): middy.MiddlewareObject<T, R> {
   return {
     onError: (handler, next): void => next(handler.error),
+  };
+}
+
+function snsMessageJsonParser(): middy.MiddlewareObject<SNSEvent, void> {
+  return {
+    before: (
+      handler: middy.HandlerLambda<SNSEvent, void, Context>,
+      next: middy.NextFunction,
+    ): void => {
+      try {
+        handler.event.Records.forEach((record: SNSEventRecord) => {
+          record.Sns.Message = JSON.parse(record.Sns.Message);
+        });
+      } catch (err) {
+        throw new createError.UnprocessableEntity(
+          'Content type defined as JSON but an invalid JSON was provided',
+        );
+      }
+      return next();
+    },
   };
 }
 
@@ -56,7 +78,7 @@ export function wrapSnsHandler(
   handler: SNSHandler,
   validatorOptions?: ValidatorOptions,
 ): middy.Middy<SNSEvent, void> {
-  return addCommons(handler).use(
-    validatorOptions ? validator(validatorOptions) : nullMiddleware(),
-  );
+  return addCommons(handler)
+    .use(snsMessageJsonParser())
+    .use(validatorOptions ? validator(validatorOptions) : nullMiddleware());
 }

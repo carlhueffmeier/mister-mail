@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`EmailService sendEmail given valid request should save the email 1`] = `
+exports[`email-service sendEmail given valid request should save the email 1`] = `
 Array [
   Array [
     Object {
@@ -17,7 +17,7 @@ Array [
 ]
 `;
 
-exports[`EmailService sendEmail given valid request should send the email 1`] = `
+exports[`email-service sendEmail given valid request should send the email 1`] = `
 Array [
   Array [
     Object {

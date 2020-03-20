@@ -67,7 +67,7 @@ const handler = wrapHttpHandler(
     };
     await SNS.publish({
       Message: JSON.stringify(campaignCreatedEvent),
-      TopicArn: getConfig().SNS_CAMPAIGNS_TOPIC,
+      TopicArn: getConfig().SNS_CAMPAIGNS_TOPIC_ARN,
     })
       .promise()
       .catch(error => Log.error('Error publishing to SNS stream', { error }));

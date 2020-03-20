@@ -16,9 +16,12 @@ custom:
   stage: ${opt:stage, self:provider.stage}
   region: ${opt:region, self:provider.region}
   campaigns-table: ${self:service}-${self:custom.stage}
-  ses-configuration-set: ${self:service}-${self:custom.stage}
-  ses-email-events-topic: ${self:service}-${self:custom.stage}-ses-email-events-topic
+  campaigns-table-arn: "arn:aws:dynamodb:${self:custom.region}:#{AWS::AccountId}:table/${self:custom.campaigns-table}"
   campaigns-topic: ${self:service}-${self:custom.stage}-campaigns-topic
+  campaigns-topic-arn: "arn:aws:sns:${self:custom.region}:#{AWS::AccountId}:${self:custom.campaigns-topic}"
+  email-events-topic: ${self:service}-${self:custom.stage}-email-events-topic
+  email-events-topic-arn: "arn:aws:sns:${self:custom.region}:#{AWS::AccountId}:${self:custom.email-events-topic}"
+  ses-configuration-set: ${self:service}-${self:custom.stage}
 
 provider:
   name: aws
@@ -28,8 +31,8 @@ provider:
   environment:
     AWS_NODEJS_CONNECTION_REUSE_ENABLED: 1
     DYNAMODB_CAMPAIGN_TABLE: ${self:custom.campaigns-table}
-    SNS_CAMPAIGNS_TOPIC:  ${self:custom.campaigns-topic}
-    SES_EMAIL_EVENTS_TOPIC_ARN:  "arn:aws:sns:${self:custom.region}:#{AWS::AccountId}:${self:custom.ses-email-events-topic}"
+    SNS_CAMPAIGNS_TOPIC_ARN: ${self:custom.campaigns-topic-arn}
+    SNS_EMAIL_EVENTS_TOPIC_ARN: ${self:custom.email-events-topic-arn}
     SES_CONFIGURATION_SET: ${self:custom.ses-configuration-set}
   iamRoleStatements:
     - Effect: Allow
@@ -41,7 +44,13 @@ provider:
         - dynamodb:UpdateItem
         - dynamodb:DeleteItem
       Resource:
-        - "arn:aws:dynamodb:${self:custom.region}:#{AWS::AccountId}:table/${self:custom.campaigns-table}"
+        - ${self:custom.campaigns-table-arn}
+    - Effect: Allow
+      Action:
+        - SNS:Publish
+      Resource:
+        - ${self:custom.campaigns-topic-arn}
+        - ${self:custom.email-events-topic-arn}
 
 functions:
   create-campaign:
@@ -64,7 +73,7 @@ functions:
   on-email-event:
     handler: services/api/on-email-event.handler
     events:
-      - sns: ${self:custom.ses-email-events-topic}
+      - sns: ${self:custom.email-events-topic}
 
 resources:
   - ${file(resources/cognito-user-pool.yml)}

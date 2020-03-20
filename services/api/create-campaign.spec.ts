@@ -13,7 +13,7 @@ jest.mock('@dazn/lambda-powertools-sns-client', () => {
   };
 });
 
-describe('services/api/create-campaign.ts', () => {
+describe('create-campaign', () => {
   describe('given valid body', () => {
     const createCampaignRequest = {
       name: 'Camping trip',

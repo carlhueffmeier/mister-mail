@@ -21,16 +21,26 @@ const inputSchema = {
       items: {
         type: 'object',
         properties: {
-          notificationType: {
-            type: 'string',
-            enum: ['Bounce', 'Complaint', 'Delivery'],
-          },
-          mail: {
+          Sns: {
             type: 'object',
-            required: ['messageId'],
             properties: {
-              messageId: { type: 'string' },
-              destination: { type: 'array', items: { type: 'string' } },
+              Message: {
+                type: 'object',
+                properties: {
+                  notificationType: {
+                    type: 'string',
+                    enum: ['Bounce', 'Complaint', 'Delivery'],
+                  },
+                  mail: {
+                    type: 'object',
+                    required: ['messageId'],
+                    properties: {
+                      messageId: { type: 'string' },
+                      destination: { type: 'array', items: { type: 'string' } },
+                    },
+                  },
+                },
+              },
             },
           },
         },
@@ -52,7 +62,7 @@ interface EmailEvent {
 const handler = wrapSnsHandler(
   async (event: SNSEvent, _context, _cb) => {
     Log.debug('Received event', { event });
-    const emailEvent = (event.Records[0] as unknown) as EmailEvent;
+    const emailEvent = (event.Records[0].Sns.Message as unknown) as EmailEvent;
     const newStatus =
       emailEvent.notificationType === 'Delivery'
         ? EmailStatus.Delivered

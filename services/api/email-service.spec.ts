@@ -4,7 +4,7 @@ import { SendEmailRequest } from './email-service.types';
 import { EmailRepository } from './email-repository';
 import Log from '@dazn/lambda-powertools-logger';
 
-describe('EmailService', () => {
+describe('email-service', () => {
   const fakeEmailRepository = ({
     create: jest.fn(),
   } as unknown) as EmailRepository;
