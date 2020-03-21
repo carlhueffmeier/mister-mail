@@ -1,4 +1,4 @@
-import { Destination } from './create-campaign.types';
+import { Destination } from '../../lib/types';
 
 export interface CreateCampaignRequest {
   uid: string;

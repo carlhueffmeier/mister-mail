@@ -4,6 +4,8 @@ import { SendEmailRequest } from './email-service.types';
 import { EmailRepository } from './email-repository';
 import Log from '@dazn/lambda-powertools-logger';
 
+jest.mock('../../lib/utils');
+
 describe('email-service', () => {
   const fakeEmailRepository = ({
     create: jest.fn(),

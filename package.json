@@ -6,8 +6,9 @@
   "license": "MIT",
   "scripts": {
     "test": "jest",
-    "lint": "eslint .",
-    "lint:fix": "eslint --fix .",
+    "lint": "eslint --config .eslintrc.js --ext .ts,.js .",
+    "lint:fix": "eslint --fix --config .eslintrc.js --ext .ts,.js .",
+    "lint:check-config": "eslint --print-config lib/utils.ts | eslint-config-prettier-check",
     "deploy": "serverless deploy"
   },
   "dependencies": {
@@ -19,7 +20,7 @@
     "@dazn/lambda-powertools-middleware-sample-logging": "^1.21.0",
     "@dazn/lambda-powertools-sns-client": "^1.12.0",
     "@middy/core": "^1.0.0-beta.8",
-    "@middy/cors": "^1.0.0-alpha.6",
+    "@middy/http-cors": "^1.0.0-beta.8",
     "@middy/http-error-handler": "^1.0.0-beta.8",
     "@middy/http-json-body-parser": "^1.0.0-beta.8",
     "@middy/validator": "^1.0.0-beta.8",

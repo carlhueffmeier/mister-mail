@@ -1,5 +1,5 @@
 import middy from '@middy/core';
-import corsMiddleware from '@middy/cors';
+import corsMiddleware from '@middy/http-cors';
 import validator from '@middy/validator';
 import httpErrorHandlerMiddleware from '@middy/http-error-handler';
 import jsonBodyParserMiddleware from '@middy/http-json-body-parser';

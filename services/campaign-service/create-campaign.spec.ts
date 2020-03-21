@@ -2,7 +2,7 @@ import { APIGatewayProxyEvent, Context } from 'aws-lambda';
 import { handler } from './create-campaign';
 import { promisifyHandler } from '../../lib/test-utils';
 
-jest.mock('./config');
+jest.mock('../../lib/utils');
 jest.mock('./campaign-repository');
 jest.mock('@dazn/lambda-powertools-sns-client', () => {
   const snsResponse = {

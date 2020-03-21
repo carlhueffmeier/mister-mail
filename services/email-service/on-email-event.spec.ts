@@ -3,7 +3,7 @@ import { handler } from './on-email-event';
 import emailDeliveredEvent from './test-data/ses-email-delivered.json';
 import { promisifyHandler } from '../../lib/test-utils';
 
-jest.mock('./config');
+jest.mock('../../lib/utils');
 
 function snsEventFromSesEvent(snsEventData: unknown): Readonly<SNSEvent> {
   return ({

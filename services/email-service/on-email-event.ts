@@ -1,14 +1,14 @@
 import Log from '@dazn/lambda-powertools-logger';
-import { wrapSnsHandler } from './middleware';
+import { wrapSnsHandler } from '../../lib/middleware';
 import DynamoDb from '@dazn/lambda-powertools-dynamodb-client';
 import { EmailRepository, EmailStatus } from './email-repository';
 import { SNSEvent } from 'aws-lambda';
-import { getConfig } from './config';
+import { config } from './config';
 import 'source-map-support/register';
 
 const emailRepository = new EmailRepository({
   dynamoDbDocumentClient: DynamoDb,
-  tableName: getConfig().DYNAMODB_CAMPAIGN_TABLE,
+  tableName: config.DYNAMODB_CAMPAIGN_TABLE,
   logger: Log,
 });
 

@@ -22,10 +22,10 @@
     "allowSyntheticDefaultImports": true,
     "typeRoots": ["node_modules/@types", "types"],
   },
-  "include": ["./**/*.ts"],
+  "include": ["**/*.ts"],
   "exclude": [
-    "services/web-client",
-    "node_modules/**/*",
+    "services/web-client/**/*",
+    "node_modules",
     ".serverless/**/*",
     ".webpack/**/*",
     "_warmup/**/*",

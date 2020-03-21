@@ -1,26 +1,26 @@
 import AWS from 'aws-sdk';
 import Log from '@dazn/lambda-powertools-logger';
-import { wrapSnsHandler } from './middleware';
+import { wrapSnsHandler } from '../../lib/middleware';
 import DynamoDb from '@dazn/lambda-powertools-dynamodb-client';
 import { EmailRepository } from './email-repository';
-import { CampaignCreatedEvent } from './create-campaign.types';
+import { CampaignCreatedEvent } from '../../lib/types';
 import { EmailService } from './email-service';
 import { SendEmailRequest } from './email-service.types';
 import { SNSEvent } from 'aws-lambda';
-import { getConfig } from './config';
+import { config } from './config';
 import 'source-map-support/register';
 
 const emailRepository = new EmailRepository({
   dynamoDbDocumentClient: DynamoDb,
-  tableName: getConfig().DYNAMODB_CAMPAIGN_TABLE,
+  tableName: config.DYNAMODB_CAMPAIGN_TABLE,
   logger: Log,
 });
 
 const emailService = new EmailService({
   ses: new AWS.SES(),
   emailRepository,
-  configurationSet: getConfig().SES_CONFIGURATION_SET,
-  emailTopicArn: getConfig().SNS_CAMPAIGNS_TOPIC_ARN,
+  configurationSet: config.SES_CONFIGURATION_SET,
+  emailTopicArn: config.SNS_CAMPAIGNS_TOPIC_ARN,
   logger: Log,
 });
 

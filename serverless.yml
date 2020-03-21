@@ -51,10 +51,16 @@ provider:
       Resource:
         - ${self:custom.campaigns-topic-arn}
         - ${self:custom.email-events-topic-arn}
+    - Effect: Allow
+      Action:
+        - ses:SendEmail
+        - ses:SendRawEmail
+      Resource:
+        - "*"
 
 functions:
   create-campaign:
-    handler: services/api/create-campaign.handler
+    handler: services/campaign-service/create-campaign.handler
     events:
       - http:
           method: post
@@ -66,12 +72,12 @@ functions:
               Ref: CognitoAuthorizer
 
   send-campaign-emails:
-    handler: services/api/send-campaign-emails.handler
+    handler: services/email-service/send-campaign-emails.handler
     events:
       - sns: ${self:custom.campaigns-topic}
 
   on-email-event:
-    handler: services/api/on-email-event.handler
+    handler: services/email-service/on-email-event.handler
     events:
       - sns: ${self:custom.email-events-topic}
 

@@ -1,5 +1,3 @@
-import { EnvKey } from './config.types';
-
 function getFromEnv(key: string): string {
   const value = process.env[key];
   if (typeof value === 'undefined') {
@@ -8,9 +6,10 @@ function getFromEnv(key: string): string {
   return value;
 }
 
-export * from './config.types';
-export function getConfig(): Record<EnvKey, string> {
-  return Object.values(EnvKey).reduce(
+export function getConfig(
+  envKeys: Record<string, string>,
+): Record<string, string> {
+  return Object.values(envKeys).reduce(
     (env: Record<string, string>, name: string) => {
       env[name] = getFromEnv(name);
       return env;

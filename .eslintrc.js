@@ -1,4 +1,5 @@
 module.exports = {
+  ignorePatterns: ['services/web-client'],
   plugins: ['@typescript-eslint'],
   parser: '@typescript-eslint/parser',
   parserOptions: {
@@ -24,6 +25,8 @@ module.exports = {
   },
   rules: {
     '@typescript-eslint/require-await': 'off',
+    '@typescript-eslint/member-delimiter-style': 'off',
+    '@typescript-eslint/type-annotation-spacing': 'off',
     '@typescript-eslint/promise-function-async': [
       'error',
       {

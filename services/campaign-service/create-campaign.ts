@@ -8,15 +8,16 @@ import {
   APIGatewayProxyResult,
   APIGatewayProxyCallback,
 } from 'aws-lambda';
-import { wrapHttpHandler } from './middleware';
-import { getConfig } from './config';
+import { wrapHttpHandler } from '../../lib/middleware';
+import { config } from './config';
 import { getUserId, getUserEmail } from '../../lib/auth-utils';
-import { RequestBody, CampaignCreatedEvent } from './create-campaign.types';
+import { RequestBody } from './create-campaign.types';
+import { CampaignCreatedEvent } from '../../lib/types';
 import 'source-map-support/register';
 
 const campaignRepository = new CampaignRepository({
   dynamoDbDocumentClient: DynamoDb,
-  tableName: getConfig().DYNAMODB_CAMPAIGN_TABLE,
+  tableName: config.DYNAMODB_CAMPAIGN_TABLE,
   logger: Log,
 });
 
@@ -67,7 +68,7 @@ const handler = wrapHttpHandler(
     };
     await SNS.publish({
       Message: JSON.stringify(campaignCreatedEvent),
-      TopicArn: getConfig().SNS_CAMPAIGNS_TOPIC_ARN,
+      TopicArn: config.SNS_CAMPAIGNS_TOPIC_ARN,
     })
       .promise()
       .catch(error => Log.error('Error publishing to SNS stream', { error }));

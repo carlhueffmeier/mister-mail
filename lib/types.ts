@@ -3,12 +3,6 @@ export interface Destination {
   email: string;
 }
 
-export interface RequestBody {
-  name: string;
-  questionText: string;
-  destinations: Destination[];
-}
-
 export interface Campaign {
   id: string;
   uid: string;
