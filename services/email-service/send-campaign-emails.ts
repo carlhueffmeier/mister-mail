@@ -5,7 +5,6 @@ import DynamoDb from '@dazn/lambda-powertools-dynamodb-client';
 import { EmailRepository } from './email-repository';
 import { CampaignCreatedEvent } from '../../lib/types';
 import { EmailService } from './email-service';
-import { SendEmailRequest } from './email-service.types';
 import { SNSEvent } from 'aws-lambda';
 import { config } from './config';
 import 'source-map-support/register';
@@ -68,22 +67,6 @@ const inputSchema = {
   },
 };
 
-async function sendEmail(
-  source: string,
-  destination: string,
-  name: string,
-  questionText: string,
-): Promise<void> {
-  const sendEmailRequest: SendEmailRequest = {
-    subject: `${name} has a question for you!`,
-    text: `The question is: \n\n${questionText}`,
-    html: `The question is: <b>\n\n${questionText}</b>`,
-    source,
-    destination,
-  };
-  await emailService.sendEmail(sendEmailRequest);
-}
-
 const handler = wrapSnsHandler(
   async (event: SNSEvent, _context, _cb) => {
     Log.debug('Received event', { event });
@@ -91,14 +74,16 @@ const handler = wrapSnsHandler(
       .Message as unknown) as CampaignCreatedEvent;
     Log.debug(`Sending email to ${campaign.destinations}`);
     for (const destination of campaign.destinations) {
-      await sendEmail(
-        campaign.from,
-        destination.email,
-        destination.name,
-        campaign.questionText,
-      );
+      await emailService.sendEmail({
+        subject: campaign.name,
+        text: `Hi ${destination.name}!\n The question is: \n\n${campaign.questionText}`,
+        html: `Hi ${destination.name}!<br> The question is: <b>\n\n${campaign.questionText}</b>`,
+        source: campaign.from,
+        destination: destination.email,
+      });
     }
   },
+
   { inputSchema },
 );
 

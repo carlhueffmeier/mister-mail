@@ -64,7 +64,19 @@ functions:
     events:
       - http:
           method: post
-          path: create
+          path: campaigns/create
+          cors: true
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId:
+              Ref: CognitoAuthorizer
+
+  list-campaigns:
+    handler: services/campaign-service/list-campaigns.handler
+    events:
+      - http:
+          method: get
+          path: campaigns
           cors: true
           authorizer:
             type: COGNITO_USER_POOLS

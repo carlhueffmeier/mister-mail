@@ -47,4 +47,19 @@ export class CampaignRepository {
     await this.dynamoDbDocumentClient.put(putParams).promise();
     return newItem;
   }
+
+  async findAllByUserId(uid: string): Promise<CreateCampaignRequest[]> {
+    const queryParams: DynamoDB.DocumentClient.QueryInput = {
+      TableName: this.tableName,
+      KeyConditionExpression: 'pk = :uid and begins_with(sk, :prefix)',
+      ExpressionAttributeValues: {
+        ':uid': uid,
+        ':prefix': 'C-',
+      },
+    };
+    const result = await this.dynamoDbDocumentClient
+      .query(queryParams)
+      .promise();
+    return result.Items as CreateCampaignRequest[];
+  }
 }
