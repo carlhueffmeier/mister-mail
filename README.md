@@ -4,10 +4,10 @@ Friendly mass mailer.
 
 ## Architecture
 
-More or less how the first iteration will look like.
+A very rough first-iteration whiteboard-architecture draft.
 
 <a href="https://drive.google.com/file/d/12FSTrMZs5HWeGkN_7h481OHAxGHd0cRv/view?usp=sharing">
-<img src="https://drive.google.com/uc?id=138IUPNBW1qQiVg3A7H-KXqKreirysQYI" width="640"></img>
+<img src="https://user-images.githubusercontent.com/27681148/77121976-bfff8f00-6a3c-11ea-97e4-cfd2e26b7012.png" width="640"></img>
 </a>
 
 ## Setup
