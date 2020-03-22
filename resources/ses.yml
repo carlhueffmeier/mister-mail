@@ -4,6 +4,28 @@ Resources:
     Properties:
       Name: ${self:custom.ses-configuration-set}
 
+  EmailEventsTopic:
+    Type: AWS::SNS::Topic
+    Properties: 
+      TopicName: ${self:custom.email-events-topic}
+
+  # This is pretty obscure
+  # The Serverless Framework transforms the name of lambda functions defined in serverless.yml
+  #   * "-" is replaced by "Dash"
+  #   * First letter is captitalized
+  #   * "LambdaFunction" is added to the end
+  # If in doubt check .serverless/serverless-state.json
+  InvokeConfigureEmailEvents:
+    Type: Custom::LambdaInvocation
+    DependsOn:
+      - SesConfigurationSet
+      - EmailEventsTopic
+      - ConfigureEmailEventsLambdaFunction
+    Properties:
+      ServiceToken: !GetAtt ConfigureEmailEventsLambdaFunction.Arn
+      SesConfigurationSet: ${self:custom.ses-configuration-set}
+      SnsTopicArn: !Ref EmailEventsTopic
+
 Outputs:
   SesConfigurationSet:
     Value:

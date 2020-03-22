@@ -12,7 +12,6 @@ describe('email-service', () => {
   } as unknown) as EmailRepository;
   const fakeSes = ({ sendEmail: jest.fn() } as unknown) as AWS.SES;
   const configurationSet = 'configurationSet';
-  const emailTopicArn = 'arn';
 
   describe('sendEmail', () => {
     describe('given valid request', () => {
@@ -28,7 +27,6 @@ describe('email-service', () => {
           ses: fakeSes,
           emailRepository: fakeEmailRepository,
           configurationSet,
-          emailTopicArn,
           logger: ({ debug: jest.fn() } as unknown) as Log,
         });
         const fakeResponse = {
@@ -48,7 +46,6 @@ describe('email-service', () => {
           ses: fakeSes,
           emailRepository: fakeEmailRepository,
           configurationSet,
-          emailTopicArn,
           logger: ({ debug: jest.fn() } as unknown) as Log,
         });
         const fakeResponse = {

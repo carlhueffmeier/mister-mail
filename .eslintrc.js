@@ -44,6 +44,7 @@ module.exports = {
         varsIgnorePattern: '^_',
       },
     ],
+    '@typescript-eslint/no-use-before-define': ['error', { functions: false }],
   },
   overrides: [
     {

@@ -8,7 +8,7 @@ plugins:
 custom:
   webpack:
     webpackConfig: ./webpack.config.js
-    excludeFiles: services/**/*.[spec.ts|map]
+    excludeFiles: ./**/*.spec.ts
     includeModules:
       forceExclude:
         - "aws-sdk"
@@ -55,11 +55,13 @@ provider:
       Action:
         - ses:SendEmail
         - ses:SendRawEmail
+        - ses:CreateConfigurationSetEventDestination
+        - ses:DeleteConfigurationSetEventDestination
       Resource:
         - "*"
 
 functions:
-  create-campaign:
+  CreateCampaign:
     handler: services/campaign-service/create-campaign.handler
     events:
       - http:
@@ -71,7 +73,7 @@ functions:
             authorizerId:
               Ref: CognitoAuthorizer
 
-  list-campaigns:
+  ListCampaigns:
     handler: services/campaign-service/list-campaigns.handler
     events:
       - http:
@@ -83,15 +85,20 @@ functions:
             authorizerId:
               Ref: CognitoAuthorizer
 
-  send-campaign-emails:
+  SendCampaignEmails:
     handler: services/email-service/send-campaign-emails.handler
     events:
       - sns: ${self:custom.campaigns-topic}
 
-  on-email-event:
-    handler: services/email-service/on-email-event.handler
+  HandleEmailEvent:
+    handler: services/email-service/handle-email-event.handler
     events:
-      - sns: ${self:custom.email-events-topic}
+      - sns:
+          arn: !Ref EmailEventsTopic
+          topicName: ${self:custom.email-events-topic}
+
+  ConfigureEmailEvents:
+    handler: services/email-service/configure-email-events.handler
 
 resources:
   - ${file(resources/cognito-user-pool.yml)}

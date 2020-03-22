@@ -1,5 +1,5 @@
 import { SNSEvent, Context } from 'aws-lambda';
-import { handler } from './on-email-event';
+import { handler } from './handle-email-event';
 import emailDeliveredEvent from './test-data/ses-email-delivered.json';
 import { promisifyHandler } from '../../lib/test-utils';
 

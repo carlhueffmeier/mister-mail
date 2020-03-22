@@ -19,7 +19,6 @@ const emailService = new EmailService({
   ses: new AWS.SES(),
   emailRepository,
   configurationSet: config.SES_CONFIGURATION_SET,
-  emailTopicArn: config.SNS_CAMPAIGNS_TOPIC_ARN,
   logger: Log,
 });
 

@@ -1,7 +1,7 @@
   Resources:
     CampaignDynamoDbTable:
       Type: AWS::DynamoDB::Table
-      DeletionPolicy: Retain
+      DeletionPolicy: Delete
       Properties:
         TableName: ${self:custom.campaigns-table}
         AttributeDefinitions:

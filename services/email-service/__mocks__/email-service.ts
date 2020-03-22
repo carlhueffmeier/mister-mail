@@ -9,7 +9,6 @@ export class EmailService {
     _ses: AWS.SES;
     _emailRepository: EmailRepository;
     _configurationSet: string;
-    _emailTopicArn: string;
     _logger: Log;
   }) {
     // Noop
