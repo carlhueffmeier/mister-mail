@@ -6,7 +6,7 @@ import Log from '@dazn/lambda-powertools-logger';
 
 jest.mock('../../lib/utils');
 
-describe('email-service', () => {
+describe('email-client', () => {
   const fakeEmailRepository = ({
     create: jest.fn(),
   } as unknown) as EmailRepository;

@@ -1,58 +1,60 @@
 {
-  "notificationType": "Delivery",
+  "eventType": "Delivery",
   "mail": {
-    "timestamp": "2016-01-27T14:59:38.237Z",
-    "messageId": "0000014644fe5ef6-9a483358-9170-4cb4-a269-f5dcdf415321-000000",
-    "source": "john@example.com",
-    "sourceArn": "arn:aws:ses:us-west-2:888888888888:identity/example.com",
-    "sourceIp": "127.0.3.0",
+    "timestamp": "2016-10-19T23:20:52.240Z",
+    "source": "sender@example.com",
+    "sourceArn": "arn:aws:ses:us-east-1:123456789012:identity/sender@example.com",
     "sendingAccountId": "123456789012",
-    "destination": ["jane@example.com"],
+    "messageId": "EXAMPLE7c191be45-e9aedb9a-02f9-4d12-a87d-dd0099a07f8a-000000",
+    "destination": ["recipient@example.com"],
     "headersTruncated": false,
     "headers": [
       {
         "name": "From",
-        "value": "\"John Doe\" <john@example.com>"
+        "value": "sender@example.com"
       },
       {
         "name": "To",
-        "value": "\"Jane Doe\" <jane@example.com>"
-      },
-      {
-        "name": "Message-ID",
-        "value": "custom-message-ID"
+        "value": "recipient@example.com"
       },
       {
         "name": "Subject",
-        "value": "Hello"
+        "value": "Message sent from Amazon SES"
+      },
+      {
+        "name": "MIME-Version",
+        "value": "1.0"
       },
       {
         "name": "Content-Type",
-        "value": "text/plain; charset=\"UTF-8\""
+        "value": "text/html; charset=UTF-8"
       },
       {
         "name": "Content-Transfer-Encoding",
-        "value": "base64"
-      },
-      {
-        "name": "Date",
-        "value": "Wed, 27 Jan 2016 14:58:45 +0000"
+        "value": "7bit"
       }
     ],
     "commonHeaders": {
-      "from": ["John Doe <john@example.com>"],
-      "date": "Wed, 27 Jan 2016 14:58:45 +0000",
-      "to": ["Jane Doe <jane@example.com>"],
-      "messageId": "custom-message-ID",
-      "subject": "Hello"
+      "from": ["sender@example.com"],
+      "to": ["recipient@example.com"],
+      "messageId": "EXAMPLE7c191be45-e9aedb9a-02f9-4d12-a87d-dd0099a07f8a-000000",
+      "subject": "Message sent from Amazon SES"
+    },
+    "tags": {
+      "ses:configuration-set": ["ConfigSet"],
+      "ses:source-ip": ["192.0.2.0"],
+      "ses:from-domain": ["example.com"],
+      "ses:caller-identity": ["ses_user"],
+      "ses:outgoing-ip": ["192.0.2.0"],
+      "myCustomTag1": ["myCustomTagValue1"],
+      "myCustomTag2": ["myCustomTagValue2"]
     }
   },
   "delivery": {
-    "timestamp": "2016-01-27T14:59:38.237Z",
-    "recipients": ["jane@example.com"],
-    "processingTimeMillis": 546,
-    "reportingMTA": "a8-70.smtp-out.amazonses.com",
-    "smtpResponse": "250 ok:  Message 64111812 accepted",
-    "remoteMtaIp": "127.0.2.0"
+    "timestamp": "2016-10-19T23:21:04.133Z",
+    "processingTimeMillis": 11893,
+    "recipients": ["recipient@example.com"],
+    "smtpResponse": "250 2.6.0 Message received",
+    "reportingMTA": "mta.example.com"
   }
 }

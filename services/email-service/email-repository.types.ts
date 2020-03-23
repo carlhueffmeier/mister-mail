@@ -2,7 +2,9 @@ export enum EmailStatus {
   Created = 'Created',
   Sent = 'Sent',
   Delivered = 'Delivered',
-  Failed = 'Failed',
+  Complaint = 'Complaint',
+  Rejected = 'Rejected',
+  Bounce = 'Bounce',
   Opened = 'Opened',
   Responded = 'Responded',
 }

@@ -26,10 +26,20 @@ const inputSchema = {
             properties: {
               Message: {
                 type: 'object',
+                required: ['eventType'],
                 properties: {
-                  notificationType: {
+                  eventType: {
                     type: 'string',
-                    enum: ['Bounce', 'Complaint', 'Delivery'],
+                    enum: [
+                      'Bounce',
+                      'Click',
+                      'Complaint',
+                      'Delivery',
+                      'Open',
+                      'Reject',
+                      'Rendering Failure',
+                      'Send',
+                    ],
                   },
                   mail: {
                     type: 'object',
@@ -55,18 +65,38 @@ interface EmailEventMailObject {
 }
 
 interface EmailEvent {
-  notificationType: 'Bounce' | 'Complaint' | 'Delivery';
+  eventType:
+    | 'Bounce'
+    | 'Click'
+    | 'Complaint'
+    | 'Delivered'
+    | 'Open'
+    | 'Reject'
+    | 'Send'
+    | 'Rendering Failure';
   mail: EmailEventMailObject;
 }
+
+const eventToStatusMapping = {
+  Send: EmailStatus.Sent,
+  Delivered: EmailStatus.Delivered,
+  Open: EmailStatus.Opened,
+  Bounce: EmailStatus.Bounce,
+  Complaint: EmailStatus.Complaint,
+  Reject: EmailStatus.Rejected,
+  'Rendering Failure': undefined,
+  Click: undefined,
+};
 
 const handler = wrapSnsHandler(
   async (event: SNSEvent, _context, _cb) => {
     Log.debug('Received event', { event });
     const emailEvent = (event.Records[0].Sns.Message as unknown) as EmailEvent;
-    const newStatus =
-      emailEvent.notificationType === 'Delivery'
-        ? EmailStatus.Delivered
-        : EmailStatus.Failed;
+    const newStatus = eventToStatusMapping[emailEvent.eventType];
+    if (!newStatus) {
+      Log.debug(`Received event ${emailEvent.eventType}, doing nothing`);
+      return;
+    }
     Log.debug(
       `Marking ${emailEvent.mail.messageId} as ${newStatus}, user is ${emailEvent.mail.destination[0]}`,
     );
