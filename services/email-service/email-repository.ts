@@ -41,7 +41,19 @@ export class EmailRepository {
     return newItem;
   }
 
-  async updateStatus(_messageId: string, _status: EmailStatus): Promise<void> {
-    // TODO
+  async updateStatus(messageId: string, status: EmailStatus): Promise<void> {
+    const updateParams = {
+      TableName: this.tableName,
+      Key: { pk: messageId, sk: 'mail' },
+      UpdateExpression: 'set #status = :new_status',
+      ExpressionAttributeNames: {
+        '#status': 'status',
+      },
+      ExpressionAttributeValues: {
+        ':new_status': status,
+      },
+    };
+    this.logger.debug('Updating email record', { updateParams });
+    await this.dynamoDbDocumentClient.update(updateParams).promise();
   }
 }
