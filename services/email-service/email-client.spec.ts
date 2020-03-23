@@ -1,6 +1,6 @@
 import AWS from 'aws-sdk';
-import { EmailService } from './email-service';
-import { SendEmailRequest } from './email-service.types';
+import { EmailClient } from './email-client';
+import { SendEmailRequest } from './email-client.types';
 import { EmailRepository } from './email-repository';
 import Log from '@dazn/lambda-powertools-logger';
 
@@ -23,7 +23,7 @@ describe('email-service', () => {
         destination: 'destination',
       };
       it('should send the email', async () => {
-        const service = new EmailService({
+        const service = new EmailClient({
           ses: fakeSes,
           emailRepository: fakeEmailRepository,
           configurationSet,
@@ -42,7 +42,7 @@ describe('email-service', () => {
       });
 
       it('should save the email', async () => {
-        const service = new EmailService({
+        const service = new EmailClient({
           ses: fakeSes,
           emailRepository: fakeEmailRepository,
           configurationSet,
