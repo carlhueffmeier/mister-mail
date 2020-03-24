@@ -4,7 +4,7 @@ import campaignCreatedEvent from './test-data/campaign-created-event.json';
 import { promisifyHandler } from '../../lib/test-utils';
 
 jest.mock('./email-repository');
-jest.mock('./email-client');
+jest.mock('./send-email-use-case');
 jest.mock('../../lib/utils');
 
 function snsEventFromSesEvent(snsEventData: unknown): Readonly<SNSEvent> {

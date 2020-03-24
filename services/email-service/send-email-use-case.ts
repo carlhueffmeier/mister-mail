@@ -1,10 +1,10 @@
 import AWS from 'aws-sdk';
 import { Email, EmailStatus } from './email-repository.types';
 import { EmailRepository } from './email-repository';
-import { SendEmailRequest } from './email-client.types';
+import { SendEmailRequest } from './send-email-use-case.types';
 import Log from '@dazn/lambda-powertools-logger';
 
-export class EmailClient {
+export class SendEmailUseCase {
   private ses: AWS.SES;
   private emailRepository: EmailRepository;
   private configurationSet: string;

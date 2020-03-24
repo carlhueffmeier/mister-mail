@@ -6,6 +6,7 @@ import {
   EmailDynamoDbRecord,
 } from '../email-repository.types';
 
+export * from '../email-repository.types';
 export class EmailRepository {
   constructor(_options: {
     dynamoDbDocumentClient: DynamoDB.DocumentClient;

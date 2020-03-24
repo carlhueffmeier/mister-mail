@@ -22,6 +22,7 @@ const allEvents = {
 };
 
 jest.mock('../../lib/utils');
+jest.mock('./email-repository');
 
 function snsEventFromSesEvent(snsEventData: unknown): Readonly<SNSEvent> {
   return ({
@@ -31,7 +32,7 @@ function snsEventFromSesEvent(snsEventData: unknown): Readonly<SNSEvent> {
 
 describe('handle-email-event', () => {
   describe.each(Object.entries(allEvents))(
-    'given event %i',
+    'given event %s',
     (_eventName, event) => {
       it('should process without error', async () => {
         const context: Context = {} as Context;

@@ -1,12 +1,12 @@
 import AWS from 'aws-sdk';
-import { EmailClient } from './email-client';
-import { SendEmailRequest } from './email-client.types';
+import { SendEmailUseCase } from './send-email-use-case';
+import { SendEmailRequest } from './send-email-use-case.types';
 import { EmailRepository } from './email-repository';
 import Log from '@dazn/lambda-powertools-logger';
 
 jest.mock('../../lib/utils');
 
-describe('email-client', () => {
+describe('send-email-use-case', () => {
   const fakeEmailRepository = ({
     create: jest.fn(),
   } as unknown) as EmailRepository;
@@ -23,7 +23,7 @@ describe('email-client', () => {
         destination: 'destination',
       };
       it('should send the email', async () => {
-        const service = new EmailClient({
+        const useCase = new SendEmailUseCase({
           ses: fakeSes,
           emailRepository: fakeEmailRepository,
           configurationSet,
@@ -36,13 +36,13 @@ describe('email-client', () => {
         };
         (fakeSes.sendEmail as jest.Mock).mockReturnValueOnce(fakeResponse);
 
-        await service.sendEmail(request);
+        await useCase.sendEmail(request);
 
         expect((fakeSes.sendEmail as jest.Mock).mock.calls).toMatchSnapshot();
       });
 
       it('should save the email', async () => {
-        const service = new EmailClient({
+        const useCase = new SendEmailUseCase({
           ses: fakeSes,
           emailRepository: fakeEmailRepository,
           configurationSet,
@@ -55,7 +55,7 @@ describe('email-client', () => {
         };
         (fakeSes.sendEmail as jest.Mock).mockReturnValueOnce(fakeResponse);
 
-        await service.sendEmail(request);
+        await useCase.sendEmail(request);
 
         expect(
           (fakeEmailRepository.create as jest.Mock).mock.calls,

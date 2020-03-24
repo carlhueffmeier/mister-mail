@@ -4,7 +4,7 @@ import { wrapSnsHandler } from '../../lib/middleware';
 import DynamoDb from '@dazn/lambda-powertools-dynamodb-client';
 import { EmailRepository } from './email-repository';
 import { CampaignCreatedEvent } from '../../lib/types';
-import { EmailClient } from './email-client';
+import { SendEmailUseCase } from './send-email-use-case';
 import { SNSEvent } from 'aws-lambda';
 import { config } from './config';
 import 'source-map-support/register';
@@ -15,7 +15,7 @@ const emailRepository = new EmailRepository({
   logger: Log,
 });
 
-const emailClient = new EmailClient({
+const sendEmailUseCase = new SendEmailUseCase({
   ses: new AWS.SES(),
   emailRepository,
   configurationSet: config.SES_CONFIGURATION_SET,
@@ -73,7 +73,7 @@ const handler = wrapSnsHandler(
       .Message as unknown) as CampaignCreatedEvent;
     Log.debug(`Sending email to ${campaign.destinations}`);
     for (const destination of campaign.destinations) {
-      await emailClient.sendEmail({
+      await sendEmailUseCase.sendEmail({
         subject: campaign.name,
         text: `Hi ${destination.name}!\n The question is: \n\n${campaign.questionText}`,
         html: `Hi ${destination.name}!<br> The question is: <b>\n\n${campaign.questionText}</b>`,
