@@ -6,17 +6,25 @@ import {
   Link,
 } from 'react-router-dom';
 import Amplify, { Auth } from 'aws-amplify';
+import { withAuthenticator } from "aws-amplify-react";
 import { config } from '../config';
-import { SignInPage } from './sign-in-page';
 import { CampaignsPage } from './campaigns-page';
-import { useAuthStatus } from '../lib/auth-utils';
-import { ProtectedRoute } from './protected-route';
+import { CreateCampaignPage } from './create-campaign-page';
 
-Amplify.configure({ Auth: config.auth });
+Amplify.configure({ 
+  Auth: {
+    mandatorySignIn: true,
+    identityPoolId: config.identityPoolId,
+    region: config.region,
+    userPoolId: config.userPoolId,
+    userPoolWebClientId: config.userPoolWebClientId,
+  },
+  aws_appsync_graphqlEndpoint: config.graphQlApiUrl,
+  aws_appsync_region: config.region,
+  aws_appsync_authenticationType: "AMAZON_COGNITO_USER_POOLS",
+});
 
 function App() {
-  const isAuthenticated = useAuthStatus();
-
   return (
     <Router>
       <div>
@@ -25,27 +33,26 @@ function App() {
             <Link to="/campaigns">Campaigns</Link>
           </li>
           <li>
-            {isAuthenticated ? (
-              <button onClick={() => Auth.signOut()}>Sign Out</button>
-            ) : (
-              <Link to="/signin">Sign In</Link>
-            )}
+            <Link to="/campaigns/create">New Campaign</Link>
+          </li>
+          <li>
+            <button onClick={() => Auth.signOut()}>Sign Out</button>
           </li>
         </ul>
 
         <hr />
 
         <Switch>
-          <Route exact path="/signin">
-            <SignInPage />
-          </Route>
-          <ProtectedRoute path="/campaigns">
+          <Route exact path="/campaigns">
             <CampaignsPage />
-          </ProtectedRoute>
+          </Route>
+          <Route exact path="/campaigns/create">
+            <CreateCampaignPage />
+          </Route>
         </Switch>
       </div>
     </Router>
   );
 }
 
-export default App;
+export default withAuthenticator(App);

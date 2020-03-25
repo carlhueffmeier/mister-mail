@@ -4,6 +4,7 @@ service:
 plugins:
   - serverless-webpack
   - serverless-pseudo-parameters
+  - serverless-appsync-plugin
 
 custom:
   webpack:
@@ -13,8 +14,35 @@ custom:
       forceExclude:
         - "aws-sdk"
         - "@types/aws-lambda"
+
+  appSync:
+    name: ${self:custom.app-sync-name}
+    authenticationType: AMAZON_COGNITO_USER_POOLS
+    schema: schema.graphql
+    userPoolConfig:
+      awsRegion: ${self:custom.region}
+      defaultAction: ALLOW
+      userPoolId: !Ref CognitoUserPool
+    logConfig:
+      loggingRoleArn: !GetAtt AppSyncLoggingServiceRole.Arn
+      level: ALL
+    mappingTemplates:
+      - dataSource: Campaigns
+        type: Query
+        field: getCampaigns
+        request: "getCampaigns-request-mapping-template.txt"
+        response: "getCampaigns-response-mapping-template.txt"
+    dataSources:
+      - type: AMAZON_DYNAMODB
+        name: Campaigns
+        description: Campaigns Table
+        config:
+          tableName: ${self:custom.campaigns-table}
+          serviceRoleArn: !GetAtt AppSyncDynamoDbServiceRole.Arn
+
   stage: ${opt:stage, self:provider.stage}
   region: ${opt:region, self:provider.region}
+  app-sync-name: ${self:service}-${self:custom.stage}
   campaigns-table: ${self:service}-${self:custom.stage}
   campaigns-table-arn: "arn:aws:dynamodb:${self:custom.region}:#{AWS::AccountId}:table/${self:custom.campaigns-table}"
   campaigns-topic: ${self:service}-${self:custom.stage}-campaigns-topic
@@ -114,3 +142,4 @@ resources:
   - ${file(resources/cognito-identity-pool.yml)}
   - ${file(resources/dynamodb.yml)}
   - ${file(resources/ses.yml)}
+  - ${file(resources/app-sync.yml)}

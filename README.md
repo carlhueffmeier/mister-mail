@@ -4,7 +4,7 @@ Friendly mass mailer.
 
 ## Architecture
 
-A very rough first-iteration whiteboard-architecture draft.
+A very rough first-iteration whiteboard-architecture draft. Expect this to be slightly out-of-date.
 
 <a href="https://drive.google.com/file/d/12FSTrMZs5HWeGkN_7h481OHAxGHd0cRv/view?usp=sharing">
 <img src="https://user-images.githubusercontent.com/27681148/77238769-bbb9aa00-6bd3-11ea-83d0-c3ec02fb49b9.png" width="640"></img>
@@ -13,20 +13,36 @@ A very rough first-iteration whiteboard-architecture draft.
 ## Setup
 
 ```bash
-npm install
+> npm install
 ```
 
 ## Deploy
 
-To deploy the application, simply run
+1. To deploy the application, simply run this command in the project root.
 
 ```bash
-npm run deploy
+> npm run deploy
 ```
 
-## Sign-up
+2. Next, initialize amplify in the `services/web-client` folder.
 
-The sign-up process is not supported in the web-client yet. Use the AWS CLI to sign up and confirm a new user identity.
+```bash
+> amplify init
+```
+
+3. Associate the app with your API.
+
+```bash
+> amplify add codegen --apiId <API_ID_HERE>
+```
+
+The API ID is available at https://console.aws.amazon.com/appsync/home?region=us-east-1.
+
+Any time we modify the schema, we can re-generate the types with `amplify codegen`.
+
+## Manual Sign-up
+
+This is how you can create a new user via the AWS CLI.
 
 ```bash
 aws cognito-idp sign-up \
@@ -69,9 +85,9 @@ The solution is easy enough.
 
 ### Access Patterns
 
-| Get           | By                    | Using              |
-| ------------- | --------------------- | ------------------ |
-| User Data     | User Id               | Query PK+SK        |
-| All campaigns | User Id               | Query PK+SK prefix |
-| Campaign      | User Id + Campaign Id | Query PK+SK        |
-| All emails    | User Id + Campaign Id |
+| Get           | By                        | Using              |
+| ------------- | ------------------------- | ------------------ |
+| User Data     | User Id                   | Query PK+SK        |
+| All campaigns | User Id                   | Query PK+SK prefix |
+| Campaign      | User Id + Campaign Id     | Query PK+SK        |
+| Message       | Campaign Id + Destination | ???                |

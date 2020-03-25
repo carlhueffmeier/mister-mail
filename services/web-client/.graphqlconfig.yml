@@ -1,0 +1,18 @@
+projects:
+  mister-mail-dev:
+    schemaPath: src/graphql/schema.json
+    includes:
+      - src/graphql/**/*.ts
+    excludes:
+      - ./amplify/**
+    extensions:
+      amplify:
+        codeGenTarget: typescript
+        generatedFileName: src/graphql/types.ts
+        docsFilePath: src/graphql
+        region: us-east-1
+        apiId: 3dw5w76u4jd3rjfidixmzcd56y
+        maxDepth: 2
+extensions:
+  amplify:
+    version: 3

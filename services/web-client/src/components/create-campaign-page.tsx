@@ -1,5 +1,5 @@
 import React, { useReducer } from 'react';
-import { createCampaign } from '../lib/api';
+import { createCampaign } from '../lib/rest-api';
 import { useHistory } from 'react-router-dom';
 
 interface Destination {
@@ -107,6 +107,7 @@ export function CreateCampaignPage() {
   }
 
   function handleDestinationChange(event: React.FormEvent<HTMLInputElement>) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [_, index, field] = event.currentTarget.name.split('-');
     dispatch({
       type: 'update-destination',

@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { config } from '../config';
-import { getJwtToken } from '../lib/auth-utils';
+import { getJwtToken } from './auth-utils';
 
 interface CreateCampaignRequest {
   name: string;
@@ -31,6 +31,5 @@ export async function getCampaigns(): Promise<any> {
     `${config.baseUrl}/campaigns`,
     { headers: await getAuthHeaders() },
   );
-  console.log('get campaigns', response);
   return response.data;
 }

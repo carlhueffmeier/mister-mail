@@ -1,55 +1,70 @@
 import React, { useState, useEffect } from 'react';
-import { Link, Switch, Route, useRouteMatch } from 'react-router-dom';
-import { CreateCampaignPage } from './create-campaign-page';
-import { getCampaigns } from '../lib/api';
+import { API, graphqlOperation } from 'aws-amplify';
+import * as queries from '../graphql/queries';
+import { GetCampaignsQuery } from '../graphql/types';
+
+const EMAIL_STATS_COLUMNS = [
+  'Sent',
+  'Opened',
+  'Responded',
+  'Complaint',
+  'Rejected',
+  'Bounce',
+];
 
 export function CampaignsPage() {
-  const { path, url } = useRouteMatch();
-  const [userCampaigns, setUserCampaigns] = useState<any>(null);
+  const [userCampaigns, setUserCampaigns] = useState<
+    GetCampaignsQuery['getCampaigns'] | null
+  >(null);
 
   useEffect(() => {
     let isSubscribed = true;
-    getCampaigns().then(campaigns => {
-      isSubscribed && setUserCampaigns(campaigns);
-    });
+
+    API.graphql(graphqlOperation(queries.getCampaigns))
+      .then((campaigns: { data: GetCampaignsQuery }) => {
+        if (isSubscribed) {
+          setUserCampaigns(campaigns.data.getCampaigns);
+        }
+      })
+      .catch((error: any) => console.error(error.errors || error));
+
+    return () => {
+      isSubscribed = false;
+    };
   }, []);
 
   return (
     <div>
       <h2>Campaigns</h2>
 
-      <Switch>
-        <Route exact path={path}>
-          {userCampaigns === null ? (
-            <p>Loading...</p>
-          ) : (
-            <table>
-              <thead>
-                <tr>
-                  <th>Name</th>
-                  <th>Destinations</th>
-                  <th>Sent</th>
-                  <th>Opened</th>
-                </tr>
-              </thead>
-              <tbody>
-                {userCampaigns.map((campaign: any) => (
-                  <tr key={campaign.id}>
-                    <td>{campaign.name}</td>
-                    <td>{campaign.destinations.length}</td>
-                    <td>{campaign.stats?.Sent || 0}</td>
-                    <td>{campaign.stats?.Opened || 0}</td>
-                  </tr>
+      {userCampaigns === null ? (
+        <p>Loading...</p>
+      ) : (
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Destinations</th>
+              {EMAIL_STATS_COLUMNS.map(name => (
+                <th key={name}>{name}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {userCampaigns.map((campaign: any) => (
+              <tr key={campaign.id}>
+                <td className="centered">{campaign.name}</td>
+                <td className="centered">{campaign.destinations.length}</td>
+                {EMAIL_STATS_COLUMNS.map(name => (
+                  <td className="centered" key={name}>
+                    {campaign.stats[name] || 0}
+                  </td>
                 ))}
-              </tbody>
-            </table>
-          )}
-          <Link to={`${url}/create`}>Create new campaign</Link>
-        </Route>
-        <Route exact path={`${path}/create`}>
-          <CreateCampaignPage />
-        </Route>
-      </Switch>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
     </div>
   );
 }

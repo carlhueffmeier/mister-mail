@@ -1,0 +1,35 @@
+schema {
+  query: Query
+}
+
+type Query {
+  getCampaigns: [Campaign!]!
+}
+
+type Campaign {
+  id: String!
+  uid: String!
+  created: Long!
+  updated: Long!
+  name: String!
+  from: String!
+  questionText: String!
+  destinations: [Destination!]!
+  stats: CampaignStats!
+}
+
+type Destination {
+  name: String!
+  email: String!
+}
+
+type CampaignStats {
+  Created: Int
+  Sent: Int
+  Delivered: Int
+  Complaint: Int
+  Rejected: Int
+  Bounce: Int
+  Opened: Int
+  Responded: Int
+}
