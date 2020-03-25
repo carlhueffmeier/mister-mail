@@ -24,7 +24,6 @@
     "@middy/http-error-handler": "^1.0.0-beta.8",
     "@middy/http-json-body-parser": "^1.0.0-beta.8",
     "@middy/validator": "^1.0.0-beta.8",
-    "@types/http-errors": "^1.6.3",
     "axios": "^0.19.2",
     "http-errors": "^1.7.3",
     "serverless-pseudo-parameters": "^2.5.0",
@@ -34,6 +33,7 @@
   "devDependencies": {
     "@babel/runtime": "^7.8.7",
     "@types/aws-lambda": "^8.10.17",
+    "@types/http-errors": "^1.6.3",
     "@types/jest": "^25.1.4",
     "@types/node": "^10.12.18",
     "@types/uuid": "^7.0.0",

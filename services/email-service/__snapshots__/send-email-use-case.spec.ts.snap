@@ -4,14 +4,18 @@ exports[`send-email-use-case sendEmail given valid request should save the email
 Array [
   Array [
     Object {
+      "campaignId": "campaignId",
       "messageId": "abc",
       "status": "Sent",
+      "uid": "uid",
     },
   ],
   Array [
     Object {
+      "campaignId": "campaignId",
       "messageId": "abc",
       "status": "Sent",
+      "uid": "uid",
     },
   ],
 ]

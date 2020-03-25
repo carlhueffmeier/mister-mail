@@ -1,5 +1,5 @@
 import { Context, CloudFormationCustomResourceCreateEvent } from 'aws-lambda';
-import { handler } from './configure-email-events';
+import { handler } from './configure-ses-events';
 import { promisifyHandler } from '../../lib/test-utils';
 import https from 'https';
 import http from 'http';

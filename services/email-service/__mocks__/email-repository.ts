@@ -1,10 +1,8 @@
 import { DynamoDB } from 'aws-sdk';
 import Log from '@dazn/lambda-powertools-logger';
-import {
-  EmailStatus,
-  Email,
-  EmailDynamoDbRecord,
-} from '../email-repository.types';
+import { EmailDynamoDbRecord } from '../email-repository.types';
+import { EmailStatus } from '../../../lib/types';
+import { Email } from '../../../lib/types';
 
 export * from '../email-repository.types';
 export class EmailRepository {
@@ -21,6 +19,8 @@ export class EmailRepository {
     return {
       pk: createData.messageId,
       sk: `mail`,
+      uid: createData.uid,
+      campaignId: createData.campaignId,
       messageId: createData.messageId,
       created: timestamp,
       updated: timestamp,
@@ -29,6 +29,10 @@ export class EmailRepository {
   }
 
   async updateStatus(_messageId: string, _status: EmailStatus): Promise<void> {
-    // TODO
+    // Noop
+  }
+
+  async findById(_messageId: string): Promise<EmailDynamoDbRecord> {
+    return {} as EmailDynamoDbRecord;
   }
 }

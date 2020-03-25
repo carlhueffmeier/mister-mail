@@ -74,6 +74,8 @@ const handler = wrapSnsHandler(
     Log.debug(`Sending email to ${campaign.destinations}`);
     for (const destination of campaign.destinations) {
       await sendEmailUseCase.sendEmail({
+        uid: campaign.uid,
+        campaignId: campaign.id,
         subject: campaign.name,
         text: `Hi ${destination.name}!\n The question is: \n\n${campaign.questionText}`,
         html: `Hi ${destination.name}!<br> The question is: <b>\n\n${campaign.questionText}</b>`,
@@ -82,7 +84,6 @@ const handler = wrapSnsHandler(
       });
     }
   },
-
   { inputSchema },
 );
 

@@ -1,6 +1,6 @@
 import AWS from 'aws-sdk';
 import { EmailRepository } from '../email-repository';
-import { Email, EmailStatus } from '../email-repository.types';
+import { Email, EmailStatus } from '../../../lib/types';
 import { SendEmailRequest } from '../send-email-use-case.types';
 import Log from '@dazn/lambda-powertools-logger';
 
@@ -16,7 +16,9 @@ export class SendEmailUseCase {
 
   async sendEmail(_request: SendEmailRequest): Promise<Email> {
     return {
-      messageId: '12345',
+      uid: 'uid',
+      campaignId: 'campaignId',
+      messageId: 'messageId',
       status: EmailStatus.Sent,
     };
   }

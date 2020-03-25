@@ -21,7 +21,19 @@ module.exports = {
     filename: '[name].js',
   },
   target: 'node',
-  externals: [nodeExternals()],
+  externals: [
+    // These packages create an indirect dependency on the aws-sdk.
+    // Specifying these dependencies here turns them into 1st-level dependencies,
+    // which allows the `forceExclude` setting in serverless.yml to purge the aws-sdk
+    // dependency from the build artifact.
+    // See https://github.com/serverless-heaven/serverless-webpack/issues/292#issuecomment-348755231
+    nodeExternals({
+      whitelist: [
+        '@dazn/lambda-powertools-dynamodb-client',
+        '@dazn/lambda-powertools-sns-client',
+      ],
+    }),
+  ],
   module: {
     rules: [
       // all files with a `.ts` or `.tsx` extension will be handled by `ts-loader`

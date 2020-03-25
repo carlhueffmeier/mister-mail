@@ -19,8 +19,10 @@ custom:
   campaigns-table-arn: "arn:aws:dynamodb:${self:custom.region}:#{AWS::AccountId}:table/${self:custom.campaigns-table}"
   campaigns-topic: ${self:service}-${self:custom.stage}-campaigns-topic
   campaigns-topic-arn: "arn:aws:sns:${self:custom.region}:#{AWS::AccountId}:${self:custom.campaigns-topic}"
-  email-events-topic: ${self:service}-${self:custom.stage}-email-events-topic
-  email-events-topic-arn: "arn:aws:sns:${self:custom.region}:#{AWS::AccountId}:${self:custom.email-events-topic}"
+  ses-events-topic: ${self:service}-${self:custom.stage}-ses-events-topic
+  ses-events-topic-arn: "arn:aws:sns:${self:custom.region}:#{AWS::AccountId}:${self:custom.ses-events-topic}"
+  emails-topic: ${self:service}-${self:custom.stage}-emails-topic
+  emails-topic-arn: "arn:aws:sns:${self:custom.region}:#{AWS::AccountId}:${self:custom.emails-topic}"
   ses-configuration-set: ${self:service}-${self:custom.stage}
 
 provider:
@@ -32,7 +34,8 @@ provider:
     AWS_NODEJS_CONNECTION_REUSE_ENABLED: 1
     DYNAMODB_CAMPAIGN_TABLE: ${self:custom.campaigns-table}
     SNS_CAMPAIGNS_TOPIC_ARN: ${self:custom.campaigns-topic-arn}
-    SNS_EMAIL_EVENTS_TOPIC_ARN: ${self:custom.email-events-topic-arn}
+    SNS_SES_EVENTS_TOPIC_ARN: ${self:custom.ses-events-topic-arn}
+    SNS_EMAILS_TOPIC_ARN: ${self:custom.emails-topic-arn}
     SES_CONFIGURATION_SET: ${self:custom.ses-configuration-set}
   iamRoleStatements:
     - Effect: Allow
@@ -50,7 +53,8 @@ provider:
         - SNS:Publish
       Resource:
         - ${self:custom.campaigns-topic-arn}
-        - ${self:custom.email-events-topic-arn}
+        - ${self:custom.ses-events-topic-arn}
+        - ${self:custom.emails-topic-arn}
     - Effect: Allow
       Action:
         - ses:SendEmail
@@ -85,20 +89,25 @@ functions:
             authorizerId:
               Ref: CognitoAuthorizer
 
+  UpdateCampaignStats:
+    handler: services/campaign-service/update-campaign-stats.handler
+    events:
+      - sns: ${self:custom.emails-topic}
+
   SendCampaignEmails:
     handler: services/email-service/send-campaign-emails.handler
     events:
       - sns: ${self:custom.campaigns-topic}
 
-  HandleEmailEvent:
-    handler: services/email-service/handle-email-event.handler
+  HandleSesEvent:
+    handler: services/email-service/handle-ses-event.handler
     events:
       - sns:
-          arn: !Ref EmailEventsTopic
-          topicName: ${self:custom.email-events-topic}
+          arn: !Ref SesEventsTopic
+          topicName: ${self:custom.ses-events-topic}
 
-  ConfigureEmailEvents:
-    handler: services/email-service/configure-email-events.handler
+  ConfigureSesEvents:
+    handler: services/email-service/configure-ses-events.handler
 
 resources:
   - ${file(resources/cognito-user-pool.yml)}

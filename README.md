@@ -49,7 +49,7 @@ But the log group of the Lambda function is not cleaned up automatically. This c
 ```
   Serverless Error ---------------------------------------
 
-  An error occurred: ConfigureEmailEventsLogGroup - /aws/lambda/mister-mail-dev-ConfigureEmailEvents already exists.
+  An error occurred: ConfigureSesEventsLogGroup - /aws/lambda/mister-mail-dev-ConfigureSesEvents already exists.
 ```
 
 The solution is easy enough.
@@ -61,10 +61,11 @@ The solution is easy enough.
 
 ## DynamoDB Schema
 
-| PK      | SK   | Content                           |
-| ------- | ---- | --------------------------------- |
-| User Id | user | User data                         |
-|         | C-1  | Campaign data for campaign (id=1) |
+| PK          | SK           | Content                           |
+| ----------- | ------------ | --------------------------------- |
+| UserId      | user         | User data                         |
+|             | C-CampaignId | Campaign data for campaign (id=1) |
+| M-MessageId | mail         | Message status                    |
 
 ### Access Patterns
 
@@ -73,3 +74,4 @@ The solution is easy enough.
 | User Data     | User Id               | Query PK+SK        |
 | All campaigns | User Id               | Query PK+SK prefix |
 | Campaign      | User Id + Campaign Id | Query PK+SK        |
+| All emails    | User Id + Campaign Id |

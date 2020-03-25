@@ -1,10 +1,7 @@
 import { DynamoDB } from 'aws-sdk';
 import Log from '@dazn/lambda-powertools-logger';
-import {
-  EmailStatus,
-  Email,
-  EmailDynamoDbRecord,
-} from './email-repository.types';
+import { EmailDynamoDbRecord } from './email-repository.types';
+import { EmailStatus, Email } from '../../lib/types';
 
 export * from './email-repository.types';
 export class EmailRepository {
@@ -27,6 +24,8 @@ export class EmailRepository {
     const newItem: EmailDynamoDbRecord = {
       pk: createData.messageId,
       sk: `mail`,
+      uid: createData.uid,
+      campaignId: createData.campaignId,
       messageId: createData.messageId,
       created: timestamp,
       updated: timestamp,
@@ -41,7 +40,10 @@ export class EmailRepository {
     return newItem;
   }
 
-  async updateStatus(messageId: string, status: EmailStatus): Promise<void> {
+  async updateStatus(
+    messageId: string,
+    status: EmailStatus,
+  ): Promise<EmailDynamoDbRecord> {
     const updateParams = {
       TableName: this.tableName,
       Key: { pk: messageId, sk: 'mail' },
@@ -52,8 +54,27 @@ export class EmailRepository {
       ExpressionAttributeValues: {
         ':new_status': status,
       },
+      ReturnValues: 'ALL_NEW',
     };
     this.logger.debug('Updating email record', { updateParams });
-    await this.dynamoDbDocumentClient.update(updateParams).promise();
+    const result = await this.dynamoDbDocumentClient
+      .update(updateParams)
+      .promise();
+    return result.Attributes as EmailDynamoDbRecord;
+  }
+
+  async findById(messageId: string): Promise<EmailDynamoDbRecord> {
+    const getItemParams: AWS.DynamoDB.DocumentClient.GetItemInput = {
+      TableName: this.tableName,
+      Key: { pk: messageId, sk: 'mail' },
+    };
+    this.logger.debug('Fetching email record', { getItemParams });
+    const result = await this.dynamoDbDocumentClient
+      .get(getItemParams)
+      .promise();
+    if (!result.Item) {
+      throw new Error('Email not found!');
+    }
+    return result.Item as EmailDynamoDbRecord;
   }
 }

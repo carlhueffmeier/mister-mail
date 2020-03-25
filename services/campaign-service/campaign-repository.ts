@@ -38,6 +38,7 @@ export class CampaignRepository {
       from: createData.from,
       questionText: createData.questionText,
       destinations: createData.destinations,
+      stats: {},
     };
     const putParams: DynamoDB.DocumentClient.PutItemInput = {
       TableName: this.tableName,
@@ -46,6 +47,27 @@ export class CampaignRepository {
     this.logger.debug('Creating new campaign', { createData, putParams });
     await this.dynamoDbDocumentClient.put(putParams).promise();
     return newItem;
+  }
+
+  async increment(
+    uid: string,
+    campaignId: string,
+    status: string,
+  ): Promise<void> {
+    const updateParams = {
+      TableName: this.tableName,
+      Key: {
+        pk: uid,
+        sk: `C-${campaignId}`,
+      },
+      UpdateExpression: `set stats.${status} = if_not_exists(stats.${status}, :zero) + :one`,
+      ExpressionAttributeValues: {
+        ':zero': 0,
+        ':one': 1,
+      },
+    };
+    this.logger.debug('Updating stats', { uid, campaignId, status });
+    await this.dynamoDbDocumentClient.update(updateParams).promise();
   }
 
   async findAllByUserId(uid: string): Promise<CreateCampaignRequest[]> {

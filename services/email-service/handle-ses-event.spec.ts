@@ -1,5 +1,5 @@
 import { SNSEvent, Context } from 'aws-lambda';
-import { handler } from './handle-email-event';
+import { handler } from './handle-ses-event';
 import { promisifyHandler } from '../../lib/test-utils';
 import bounceEvent from './test-data/ses-email-bounce.json';
 import clickEvent from './test-data/ses-email-click.json';
@@ -23,6 +23,14 @@ const allEvents = {
 
 jest.mock('../../lib/utils');
 jest.mock('./email-repository');
+jest.mock('@dazn/lambda-powertools-sns-client', () => {
+  const snsResponse = {
+    promise: jest.fn().mockResolvedValue(null),
+  };
+  return {
+    publish: jest.fn().mockReturnValue(snsResponse),
+  };
+});
 
 function snsEventFromSesEvent(snsEventData: unknown): Readonly<SNSEvent> {
   return ({

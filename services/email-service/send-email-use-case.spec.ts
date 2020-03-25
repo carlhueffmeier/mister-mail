@@ -16,6 +16,8 @@ describe('send-email-use-case', () => {
   describe('sendEmail', () => {
     describe('given valid request', () => {
       const request: SendEmailRequest = {
+        uid: 'uid',
+        campaignId: 'campaignId',
         subject: 'subject',
         text: 'text',
         html: 'html',

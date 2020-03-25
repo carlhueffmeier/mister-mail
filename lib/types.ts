@@ -19,3 +19,27 @@ export interface CampaignCreatedEvent {
   timestamp: number;
   campaign: Campaign;
 }
+
+export interface EmailStatusEvent {
+  name: 'EmailStatusEvent';
+  timestamp: number;
+  email: Email;
+}
+
+export enum EmailStatus {
+  Created = 'Created',
+  Sent = 'Sent',
+  Delivered = 'Delivered',
+  Complaint = 'Complaint',
+  Rejected = 'Rejected',
+  Bounce = 'Bounce',
+  Opened = 'Opened',
+  Responded = 'Responded',
+}
+
+export interface Email {
+  uid: string;
+  campaignId: string;
+  messageId: string;
+  status: EmailStatus;
+}

@@ -19,4 +19,5 @@ export interface CampaignDynamoDbRecord {
   from: string;
   questionText: string;
   destinations: Destination[];
+  stats: object;
 }

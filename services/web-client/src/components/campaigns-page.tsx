@@ -28,8 +28,8 @@ export function CampaignsPage() {
                 <tr>
                   <th>Name</th>
                   <th>Destinations</th>
+                  <th>Sent</th>
                   <th>Opened</th>
-                  <th>Answered</th>
                 </tr>
               </thead>
               <tbody>
@@ -37,8 +37,8 @@ export function CampaignsPage() {
                   <tr key={campaign.id}>
                     <td>{campaign.name}</td>
                     <td>{campaign.destinations.length}</td>
-                    <td>0</td>
-                    <td>0</td>
+                    <td>{campaign.stats?.Sent || 0}</td>
+                    <td>{campaign.stats?.Opened || 0}</td>
                   </tr>
                 ))}
               </tbody>

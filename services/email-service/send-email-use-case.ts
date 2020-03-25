@@ -1,5 +1,5 @@
 import AWS from 'aws-sdk';
-import { Email, EmailStatus } from './email-repository.types';
+import { Email, EmailStatus } from '../../lib/types';
 import { EmailRepository } from './email-repository';
 import { SendEmailRequest } from './send-email-use-case.types';
 import Log from '@dazn/lambda-powertools-logger';
@@ -45,6 +45,8 @@ export class SendEmailUseCase {
       throw new Error(`Error sending email: ${error.message}`);
     }
     const email: Email = {
+      uid: request.uid,
+      campaignId: request.campaignId,
       messageId: result.MessageId,
       status: EmailStatus.Sent,
     };
