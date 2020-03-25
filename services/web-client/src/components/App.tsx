@@ -3,7 +3,6 @@ import {
   BrowserRouter as Router,
   Switch,
   Route,
-  Redirect,
   Link,
 } from 'react-router-dom';
 import Amplify, { Auth } from 'aws-amplify';
@@ -11,39 +10,9 @@ import { config } from '../config';
 import { SignInPage } from './sign-in-page';
 import { CampaignsPage } from './campaigns-page';
 import { useAuthStatus } from '../lib/auth-utils';
+import { ProtectedRoute } from './protected-route';
 
 Amplify.configure({ Auth: config.auth });
-
-function ProtectedRoute({
-  children,
-  ...rest
-}: {
-  children: React.ReactNode;
-  [key: string]: any;
-}) {
-  const isAuthenticated = useAuthStatus();
-
-  if (isAuthenticated === null) {
-    return <p>Loading...</p>;
-  }
-  return (
-    <Route
-      {...rest}
-      render={({ location }) =>
-        isAuthenticated ? (
-          children
-        ) : (
-          <Redirect
-            to={{
-              pathname: '/signin',
-              state: { from: location },
-            }}
-          />
-        )
-      }
-    />
-  );
-}
 
 function App() {
   const isAuthenticated = useAuthStatus();
