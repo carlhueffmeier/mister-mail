@@ -14,7 +14,7 @@ function snsEventFromSesEvent(snsEventData: unknown): Readonly<SNSEvent> {
 }
 
 describe('send-campaign-emails', () => {
-  describe('given event type "Delivery"', () => {
+  describe('given CampaignCreatedEvent', () => {
     const event = snsEventFromSesEvent(campaignCreatedEvent);
 
     it('should not throw an error', async () => {
