@@ -8,6 +8,8 @@ import https from 'https';
 import url from 'url';
 import 'source-map-support/register';
 
+const EVENT_DESTINATION_NAME = 'AllEventsSnsEventDestination';
+
 const handler = async (
   event: CloudFormationCustomResourceEvent,
   context: Context,
@@ -29,6 +31,15 @@ const handler = async (
       }
       break;
     case 'Update':
+      try {
+        await deleteEventDestination();
+        const response = await createEventDestination();
+        console.log('Successfully updated event destination', { response });
+        await sendResponse(event, context, 'SUCCESS');
+      } catch (error) {
+        console.warn('Error updating SES event destination', { error }),
+          await sendResponse(event, context, 'FAILED');
+      }
       await sendResponse(event, context, 'SUCCESS');
       break;
     case 'Delete':
@@ -55,7 +66,7 @@ const handler = async (
       .createConfigurationSetEventDestination({
         ConfigurationSetName: event.ResourceProperties.SesConfigurationSet,
         EventDestination: {
-          Name: 'AllEventsSnsEventDestination',
+          Name: EVENT_DESTINATION_NAME,
           Enabled: true,
           MatchingEventTypes: [
             'bounce',
@@ -79,7 +90,7 @@ const handler = async (
     return await ses
       .deleteConfigurationSetEventDestination({
         ConfigurationSetName: event.ResourceProperties.SesConfigurationSet,
-        EventDestinationName: 'AllEventsSnsEventDestination',
+        EventDestinationName: EVENT_DESTINATION_NAME,
       })
       .promise();
   }
