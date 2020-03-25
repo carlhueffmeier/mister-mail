@@ -1,0 +1,14 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`configure-email-events given event type "Create" should not throw an error 1`] = `
+Object {
+  "headers": Object {
+    "content-length": 167,
+    "content-type": "",
+  },
+  "hostname": "response-url.com",
+  "method": "PUT",
+  "path": "/",
+  "port": 443,
+}
+`;
