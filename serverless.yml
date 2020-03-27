@@ -23,22 +23,33 @@ custom:
       awsRegion: ${self:custom.region}
       defaultAction: ALLOW
       userPoolId: !Ref CognitoUserPool
+      playgroundClientId: !Ref CognitoUserPoolClient
     logConfig:
       loggingRoleArn: !GetAtt AppSyncLoggingServiceRole.Arn
       level: ALL
     mappingTemplates:
-      - dataSource: Campaigns
+      - dataSource: CampaignsTableDataSource
         type: Query
         field: getCampaigns
-        request: "getCampaigns-request-mapping-template.txt"
-        response: "getCampaigns-response-mapping-template.txt"
+        request: "getCampaigns-request-mapping-template.vtl"
+        response: "getCampaigns-response-mapping-template.vtl"
+      - dataSource: CreateCampaignLambdaDataSource
+        type: Mutation
+        field: createCampaign
+        request: "createCampaign-request-mapping-template.vtl"
+        response: "createCampaign-response-mapping-template.vtl"
     dataSources:
       - type: AMAZON_DYNAMODB
-        name: Campaigns
+        name: CampaignsTableDataSource
         description: Campaigns Table
         config:
           tableName: ${self:custom.campaigns-table}
           serviceRoleArn: !GetAtt AppSyncDynamoDbServiceRole.Arn
+      - type: AWS_LAMBDA
+        name: CreateCampaignLambdaDataSource
+        description: CreateCampaign Lambda
+        config:
+          functionName: CreateCampaign
 
   stage: ${opt:stage, self:provider.stage}
   region: ${opt:region, self:provider.region}
@@ -95,27 +106,6 @@ provider:
 functions:
   CreateCampaign:
     handler: services/campaign-service/create-campaign.handler
-    events:
-      - http:
-          method: post
-          path: campaigns/create
-          cors: true
-          authorizer:
-            type: COGNITO_USER_POOLS
-            authorizerId:
-              Ref: CognitoAuthorizer
-
-  ListCampaigns:
-    handler: services/campaign-service/list-campaigns.handler
-    events:
-      - http:
-          method: get
-          path: campaigns
-          cors: true
-          authorizer:
-            type: COGNITO_USER_POOLS
-            authorizerId:
-              Ref: CognitoAuthorizer
 
   UpdateCampaignStats:
     handler: services/campaign-service/update-campaign-stats.handler
@@ -134,6 +124,7 @@ functions:
           arn: !Ref SesEventsTopic
           topicName: ${self:custom.ses-events-topic}
 
+  # Only used during Cloudformation execution
   ConfigureSesEvents:
     handler: services/email-service/configure-ses-events.handler
 

@@ -2,21 +2,36 @@
 /* eslint-disable */
 //  This file was automatically generated and should not be edited.
 
-export type GetCampaignsQuery = {
-  getCampaigns:  Array< {
+export type CreateCampaignInput = {
+  name: string,
+  questionText: string,
+  destinations: Array< DestinationInput >,
+};
+
+export type DestinationInput = {
+  name: string,
+  email: string,
+};
+
+export type CreateCampaignMutationVariables = {
+  data: CreateCampaignInput,
+};
+
+export type CreateCampaignMutation = {
+  createCampaign:  {
     __typename: "Campaign",
-    id: string | null,
-    uid: string | null,
-    created: string | null,
-    updated: string | null,
-    name: string | null,
-    from: string | null,
-    questionText: string | null,
+    id: string,
+    uid: string,
+    created: string,
+    updated: string,
+    name: string,
+    from: string,
+    questionText: string,
     destinations:  Array< {
       __typename: "Destination",
-      name: string | null,
-      email: string | null,
-    } | null > | null,
+      name: string,
+      email: string,
+    } >,
     stats:  {
       __typename: "CampaignStats",
       Created: number | null,
@@ -27,6 +42,35 @@ export type GetCampaignsQuery = {
       Bounce: number | null,
       Opened: number | null,
       Responded: number | null,
-    } | null,
+    },
+  },
+};
+
+export type GetCampaignsQuery = {
+  getCampaigns:  Array< {
+    __typename: "Campaign",
+    id: string,
+    uid: string,
+    created: string,
+    updated: string,
+    name: string,
+    from: string,
+    questionText: string,
+    destinations:  Array< {
+      __typename: "Destination",
+      name: string,
+      email: string,
+    } >,
+    stats:  {
+      __typename: "CampaignStats",
+      Created: number | null,
+      Sent: number | null,
+      Delivered: number | null,
+      Complaint: number | null,
+      Rejected: number | null,
+      Bounce: number | null,
+      Opened: number | null,
+      Responded: number | null,
+    },
   } >,
 };

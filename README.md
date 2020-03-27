@@ -40,6 +40,14 @@ The API ID is available at https://console.aws.amazon.com/appsync/home?region=us
 
 Any time we modify the schema, we can re-generate the types with `amplify codegen`.
 
+## Development
+
+### Validate changes to the GraphQL schema
+
+```bash
+npm run appsync:validate
+```
+
 ## Manual Sign-up
 
 This is how you can create a new user via the AWS CLI.

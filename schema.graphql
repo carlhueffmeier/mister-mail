@@ -1,9 +1,25 @@
 schema {
   query: Query
+  mutation: Mutation
 }
 
 type Query {
   getCampaigns: [Campaign!]!
+}
+
+type Mutation {
+  createCampaign(data: CreateCampaignInput!): Campaign!
+}
+
+input CreateCampaignInput {
+  name: String!
+  questionText: String!
+  destinations: [DestinationInput!]!
+}
+
+input DestinationInput {
+  name: String!
+  email: String!
 }
 
 type Campaign {

@@ -74,6 +74,20 @@ export function wrapHttpHandler(
     .use(corsMiddleware());
 }
 
+export function wrapAppSyncHandler(
+  handler: Handler<object, object | void>,
+  validatorOptions?: ValidatorOptions,
+): middy.Middy<object, object | void> {
+  return addCommons(handler)
+    .use(validatorOptions ? validator(validatorOptions) : nullMiddleware())
+    .use(
+      httpErrorHandlerMiddleware({
+        logger: (error: HttpError): void =>
+          Log.debug('Handling HTTP error', { error }),
+      }),
+    );
+}
+
 export function wrapSnsHandler(
   handler: SNSHandler,
   validatorOptions?: ValidatorOptions,

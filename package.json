@@ -9,7 +9,8 @@
     "lint": "eslint --config .eslintrc.js --ext .ts,.js .",
     "lint:fix": "eslint --fix --config .eslintrc.js --ext .ts,.js .",
     "lint:check-config": "eslint --print-config lib/utils.ts | eslint-config-prettier-check",
-    "deploy": "serverless deploy"
+    "deploy": "serverless deploy",
+    "appsync:validate": "serverless validate-schema"
   },
   "dependencies": {
     "@dazn/lambda-powertools-correlation-ids": "^1.8.2",

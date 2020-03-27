@@ -2,16 +2,10 @@ import Log from '@dazn/lambda-powertools-logger';
 import DynamoDb from '@dazn/lambda-powertools-dynamodb-client';
 import SNS from '@dazn/lambda-powertools-sns-client';
 import { CampaignRepository } from './campaign-repository';
-import {
-  APIGatewayProxyEvent,
-  Context,
-  APIGatewayProxyResult,
-  APIGatewayProxyCallback,
-} from 'aws-lambda';
-import { wrapHttpHandler } from '../../lib/middleware';
+import { Context, Callback } from 'aws-lambda';
+import { wrapAppSyncHandler } from '../../lib/middleware';
 import { config } from './config';
-import { getUserId, getUserEmail } from '../../lib/auth-utils';
-import { RequestBody } from './create-campaign.types';
+import { CreateCampaignAppSyncEvent } from './create-campaign.types';
 import { CampaignCreatedEvent } from '../../lib/types';
 import 'source-map-support/register';
 
@@ -22,23 +16,30 @@ const campaignRepository = new CampaignRepository({
 });
 
 const inputSchema = {
-  required: ['body'],
+  required: ['field', 'arguments'],
   properties: {
-    body: {
+    field: { type: 'string' },
+    arguments: {
       type: 'object',
-      required: ['name', 'questionText', 'destinations'],
+      required: ['data'],
       properties: {
-        name: { type: 'string' },
-        questionText: { type: 'string' },
-        destinations: {
-          type: 'array',
-          maxItems: 10, // As longs as it's a for loop..
-          items: {
-            type: 'object',
-            required: ['name', 'email'],
-            properties: {
-              name: { type: 'string' },
-              email: { type: 'string' },
+        data: {
+          type: 'object',
+          required: ['name', 'questionText', 'destinations'],
+          properties: {
+            name: { type: 'string' },
+            questionText: { type: 'string' },
+            destinations: {
+              type: 'array',
+              maxItems: 10, // As longs as it's a for loop..
+              items: {
+                type: 'object',
+                required: ['name', 'email'],
+                properties: {
+                  name: { type: 'string' },
+                  email: { type: 'string' },
+                },
+              },
             },
           },
         },
@@ -47,18 +48,18 @@ const inputSchema = {
   },
 };
 
-const handler = wrapHttpHandler(
+const handler = wrapAppSyncHandler(
   async (
-    event: APIGatewayProxyEvent,
+    event: object,
     _context: Context,
-    callback: APIGatewayProxyCallback,
-  ): Promise<APIGatewayProxyResult | void> => {
+    callback: Callback,
+  ): Promise<object | void> => {
     Log.debug('Received event', { event });
-    const requestBody = (event.body as unknown) as RequestBody;
+    const appSyncEvent = (event as unknown) as CreateCampaignAppSyncEvent;
     const newCampaign = await campaignRepository.create({
-      uid: getUserId(event),
-      from: getUserEmail(event),
-      ...requestBody,
+      uid: appSyncEvent.identity.claims.sub,
+      from: appSyncEvent.identity.claims.email,
+      ...appSyncEvent.arguments.data,
     });
 
     const campaignCreatedEvent: CampaignCreatedEvent = {
@@ -73,15 +74,8 @@ const handler = wrapHttpHandler(
       .promise()
       .catch(error => Log.error('Error publishing to SNS stream', { error }));
 
-    callback(null, {
-      statusCode: 200,
-      body: JSON.stringify({
-        message: 'Mister mail, at your service',
-        newCampaign,
-      }),
-    });
+    callback(null, newCampaign);
   },
-
   { inputSchema },
 );
 

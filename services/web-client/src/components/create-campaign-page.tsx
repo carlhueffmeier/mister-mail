@@ -1,6 +1,8 @@
 import React, { useReducer } from 'react';
-import { createCampaign } from '../lib/rest-api';
 import { useHistory } from 'react-router-dom';
+import { API, graphqlOperation } from 'aws-amplify';
+import * as mutations from '../graphql/mutations';
+import { CreateCampaignMutationVariables } from '../graphql/types';
 
 interface Destination {
   name: string;
@@ -48,7 +50,11 @@ const initialState = {
 
 function formReducer(
   state: CreateCampaignFormState,
-  action: UpdateValueAction | UpdateDestinationAction | AddDestinationAction | RemoveDestinationAction,
+  action:
+    | UpdateValueAction
+    | UpdateDestinationAction
+    | AddDestinationAction
+    | RemoveDestinationAction,
 ): CreateCampaignFormState {
   switch (action.type) {
     case 'update':
@@ -71,10 +77,7 @@ function formReducer(
     case 'add-destination':
       return {
         ...state,
-        destinations: [
-          ...state.destinations,
-          { name: '', email: '' }
-        ],
+        destinations: [...state.destinations, { name: '', email: '' }],
       };
     case 'remove-destination':
       return {
@@ -88,20 +91,30 @@ function formReducer(
 }
 
 export function CreateCampaignPage() {
-  const [state, dispatch] = useReducer(formReducer, initialState);
+  const [formState, dispatch] = useReducer(formReducer, initialState);
   const history = useHistory();
 
   async function handleSubmit(
     event: React.FormEvent<HTMLFormElement>,
   ): Promise<void> {
     event.preventDefault();
-    await createCampaign(state);
+    const createCampaignVariables: CreateCampaignMutationVariables = {
+      data: formState,
+    };
+    API.graphql(
+      graphqlOperation(mutations.createCampaign, createCampaignVariables),
+    )
+      .then(() => history.push('/campaigns'))
+      .catch((error: any) => console.error(error.errors || error));
   }
 
   function handleChange(event: React.FormEvent<HTMLInputElement>) {
     dispatch({
       type: 'update',
-      name: event.currentTarget.name as keyof Omit<CreateCampaignFormState, 'destinations'>,
+      name: event.currentTarget.name as keyof Omit<
+        CreateCampaignFormState,
+        'destinations'
+      >,
       value: event.currentTarget.value,
     });
   }
@@ -123,7 +136,7 @@ export function CreateCampaignPage() {
         <div>
           <label htmlFor="name">Campaign Name</label>
           <input
-            value={state.name}
+            value={formState.name}
             onChange={handleChange}
             type="text"
             name="name"
@@ -133,38 +146,52 @@ export function CreateCampaignPage() {
         <div>
           <label htmlFor="questionText">Question</label>
           <input
-            value={state.questionText}
+            value={formState.questionText}
             onChange={handleChange}
             type="text"
             name="questionText"
             id="questionText"
           />
         </div>
-        {state.destinations.map((destination: Destination, index: number) => (
-          <div key={index}>
-            <label htmlFor={`destination-${index}-name`}>Recipient</label>
-            <input
-              value={destination.name}
-              onChange={handleDestinationChange}
-              type="text"
-              name={`destination-${index}-name`}
-              id={`destination-${index}-name`}
-            />
-            <label htmlFor={`destination-${index}-email`}>Email</label>
-            <input
-              value={destination.email}
-              onChange={handleDestinationChange}
-              type={`destination-${index}-email`}
-              name={`destination-${index}-email`}
-              id={`destination-${index}-email`}
-            />
-            <button type="button" onClick={() => dispatch({ type: 'remove-destination', index })}>-</button>
-          </div>
-        ))}
-        <button type="button" onClick={() => dispatch({ type: 'add-destination' })}>+</button>
+        {formState.destinations.map(
+          (destination: Destination, index: number) => (
+            <div key={index}>
+              <label htmlFor={`destination-${index}-name`}>Recipient</label>
+              <input
+                value={destination.name}
+                onChange={handleDestinationChange}
+                type="text"
+                name={`destination-${index}-name`}
+                id={`destination-${index}-name`}
+              />
+              <label htmlFor={`destination-${index}-email`}>Email</label>
+              <input
+                value={destination.email}
+                onChange={handleDestinationChange}
+                type={`destination-${index}-email`}
+                name={`destination-${index}-email`}
+                id={`destination-${index}-email`}
+              />
+              <button
+                type="button"
+                onClick={() => dispatch({ type: 'remove-destination', index })}
+              >
+                -
+              </button>
+            </div>
+          ),
+        )}
+        <button
+          type="button"
+          onClick={() => dispatch({ type: 'add-destination' })}
+        >
+          +
+        </button>
 
         <button type="submit">Create</button>
-        <button type="button" onClick={() => history.goBack()}>Cancel</button>
+        <button type="button" onClick={() => history.goBack()}>
+          Cancel
+        </button>
       </form>
     </div>
   );
