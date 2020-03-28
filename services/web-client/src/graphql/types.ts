@@ -13,12 +13,68 @@ export type DestinationInput = {
   email: string,
 };
 
+export type NotifyCampaignUpdate = {
+  id?: string | null,
+  uid?: string | null,
+  created?: string | null,
+  updated?: string | null,
+  name?: string | null,
+  from?: string | null,
+  questionText?: string | null,
+  destinations?: Array< DestinationInput | null > | null,
+  stats?: CampaignStatsInput | null,
+};
+
+export type CampaignStatsInput = {
+  Created?: number | null,
+  Sent?: number | null,
+  Delivered?: number | null,
+  Complaint?: number | null,
+  Rejected?: number | null,
+  Bounce?: number | null,
+  Opened?: number | null,
+  Responded?: number | null,
+};
+
 export type CreateCampaignMutationVariables = {
   data: CreateCampaignInput,
 };
 
 export type CreateCampaignMutation = {
   createCampaign:  {
+    __typename: "Campaign",
+    id: string,
+    uid: string,
+    created: string,
+    updated: string,
+    name: string,
+    from: string,
+    questionText: string,
+    destinations:  Array< {
+      __typename: "Destination",
+      name: string,
+      email: string,
+    } >,
+    stats:  {
+      __typename: "CampaignStats",
+      Created: number | null,
+      Sent: number | null,
+      Delivered: number | null,
+      Complaint: number | null,
+      Rejected: number | null,
+      Bounce: number | null,
+      Opened: number | null,
+      Responded: number | null,
+    },
+  },
+};
+
+export type NotifyCampaignUpdateMutationVariables = {
+  data: NotifyCampaignUpdate,
+};
+
+export type NotifyCampaignUpdateMutation = {
+  notifyCampaignUpdate:  {
     __typename: "Campaign",
     id: string,
     uid: string,
@@ -73,4 +129,33 @@ export type GetCampaignsQuery = {
       Responded: number | null,
     },
   } >,
+};
+
+export type CampaignUpdateSubscription = {
+  campaignUpdate:  {
+    __typename: "Campaign",
+    id: string,
+    uid: string,
+    created: string,
+    updated: string,
+    name: string,
+    from: string,
+    questionText: string,
+    destinations:  Array< {
+      __typename: "Destination",
+      name: string,
+      email: string,
+    } >,
+    stats:  {
+      __typename: "CampaignStats",
+      Created: number | null,
+      Sent: number | null,
+      Delivered: number | null,
+      Complaint: number | null,
+      Rejected: number | null,
+      Bounce: number | null,
+      Opened: number | null,
+      Responded: number | null,
+    },
+  },
 };

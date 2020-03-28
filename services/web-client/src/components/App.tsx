@@ -1,58 +1,36 @@
 import React from 'react';
-import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
-import Amplify, { Auth } from 'aws-amplify';
-import { withAuthenticator } from 'aws-amplify-react';
-import { config } from '../config';
+import { Switch, Route, Link } from 'react-router-dom';
 import { CampaignsPage } from './campaigns-page';
 import { CreateCampaignPage } from './create-campaign-page';
-
-Amplify.configure({
-  Auth: {
-    mandatorySignIn: true,
-    identityPoolId: config.identityPoolId,
-    region: config.region,
-    userPoolId: config.userPoolId,
-    userPoolWebClientId: config.userPoolWebClientId,
-  },
-  aws_appsync_graphqlEndpoint: config.graphQlApiUrl,
-  aws_appsync_region: config.region,
-  aws_appsync_authenticationType: 'AMAZON_COGNITO_USER_POOLS',
-  // By default Amplify will use the accessToken instead of the idToken.
-  // The accessToken does not include the claims with custom attributes like user email.
-  graphql_headers: async () => ({
-    Authorization: (await Auth.currentSession()).getIdToken().getJwtToken(),
-  }),
-});
+import { signOut } from '../lib/auth-utils';
 
 function App() {
   return (
-    <Router>
-      <div>
-        <ul>
-          <li>
-            <Link to="/campaigns">Campaigns</Link>
-          </li>
-          <li>
-            <Link to="/campaigns/create">New Campaign</Link>
-          </li>
-          <li>
-            <button onClick={() => Auth.signOut()}>Sign Out</button>
-          </li>
-        </ul>
+    <div>
+      <ul>
+        <li>
+          <Link to="/campaigns">Campaigns</Link>
+        </li>
+        <li>
+          <Link to="/campaigns/create">New Campaign</Link>
+        </li>
+        <li>
+          <button onClick={signOut}>Sign Out</button>
+        </li>
+      </ul>
 
-        <hr />
+      <hr />
 
-        <Switch>
-          <Route exact path="/campaigns">
-            <CampaignsPage />
-          </Route>
-          <Route exact path="/campaigns/create">
-            <CreateCampaignPage />
-          </Route>
-        </Switch>
-      </div>
-    </Router>
+      <Switch>
+        <Route exact path="/campaigns">
+          <CampaignsPage />
+        </Route>
+        <Route exact path="/campaigns/create">
+          <CreateCampaignPage />
+        </Route>
+      </Switch>
+    </div>
   );
 }
 
-export default withAuthenticator(App);
+export default App;

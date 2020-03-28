@@ -1,8 +1,9 @@
 import React, { useReducer } from 'react';
 import { useHistory } from 'react-router-dom';
-import { API, graphqlOperation } from 'aws-amplify';
+import { useMutation } from '@apollo/react-hooks';
 import * as mutations from '../graphql/mutations';
 import { CreateCampaignMutationVariables } from '../graphql/types';
+import gql from 'graphql-tag';
 
 interface Destination {
   name: string;
@@ -92,20 +93,20 @@ function formReducer(
 
 export function CreateCampaignPage() {
   const [formState, dispatch] = useReducer(formReducer, initialState);
+  const [
+    createCampaign,
+    { loading: mutationLoading, error: mutationError },
+  ] = useMutation<any, CreateCampaignMutationVariables>(
+    gql(mutations.createCampaign),
+    { onCompleted: () => history.push('/campaigns') },
+  );
   const history = useHistory();
 
   async function handleSubmit(
     event: React.FormEvent<HTMLFormElement>,
   ): Promise<void> {
     event.preventDefault();
-    const createCampaignVariables: CreateCampaignMutationVariables = {
-      data: formState,
-    };
-    API.graphql(
-      graphqlOperation(mutations.createCampaign, createCampaignVariables),
-    )
-      .then(() => history.push('/campaigns'))
-      .catch((error: any) => console.error(error.errors || error));
+    createCampaign({ variables: { data: formState } });
   }
 
   function handleChange(event: React.FormEvent<HTMLInputElement>) {
@@ -188,10 +189,12 @@ export function CreateCampaignPage() {
           +
         </button>
 
-        <button type="submit">Create</button>
-        <button type="button" onClick={() => history.goBack()}>
+        <button disabled={mutationLoading} type="submit">Create</button>
+        <button disabled={mutationLoading} type="button" onClick={() => history.goBack()}>
           Cancel
         </button>
+        <br />
+        {mutationError && <p>Something went wrong: {mutationError}</p>}
       </form>
     </div>
   );

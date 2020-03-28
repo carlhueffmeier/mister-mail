@@ -28,16 +28,26 @@ custom:
       loggingRoleArn: !GetAtt AppSyncLoggingServiceRole.Arn
       level: ALL
     mappingTemplates:
-      - dataSource: CampaignsTableDataSource
+      - field: getCampaigns
         type: Query
-        field: getCampaigns
-        request: "getCampaigns-request-mapping-template.vtl"
-        response: "getCampaigns-response-mapping-template.vtl"
-      - dataSource: CreateCampaignLambdaDataSource
+        dataSource: CampaignsTableDataSource
+        request: "getCampaigns.request.vtl"
+        response: "getCampaigns.response.vtl"
+      - field: createCampaign
         type: Mutation
-        field: createCampaign
-        request: "createCampaign-request-mapping-template.vtl"
-        response: "createCampaign-response-mapping-template.vtl"
+        dataSource: CreateCampaignLambdaDataSource
+        request: "createCampaign.request.vtl"
+        response: "createCampaign.response.vtl"
+      - field: campaignUpdate
+        type: Subscription
+        dataSource: NoneDataSource
+        request: "local.request.vtl"
+        response: "local.response.vtl"
+      - field: notifyCampaignUpdate
+        type: Mutation
+        dataSource: NoneDataSource
+        request: "local.request.vtl"
+        response: "local.response.vtl"
     dataSources:
       - type: AMAZON_DYNAMODB
         name: CampaignsTableDataSource
@@ -50,6 +60,9 @@ custom:
         description: CreateCampaign Lambda
         config:
           functionName: CreateCampaign
+      - type: NONE
+        name: NoneDataSource
+        description: Local Data Source
 
   stage: ${opt:stage, self:provider.stage}
   region: ${opt:region, self:provider.region}

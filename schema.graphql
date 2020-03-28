@@ -1,6 +1,7 @@
 schema {
   query: Query
   mutation: Mutation
+  subscription: Subscription
 }
 
 type Query {
@@ -9,6 +10,12 @@ type Query {
 
 type Mutation {
   createCampaign(data: CreateCampaignInput!): Campaign!
+  notifyCampaignUpdate(data: NotifyCampaignUpdate!): Campaign!
+}
+
+type Subscription {
+  campaignUpdate: Campaign
+  @aws_subscribe(mutations: ["createCampaign", "notifyCampaignUpdate"])
 }
 
 input CreateCampaignInput {
@@ -40,6 +47,29 @@ type Destination {
 }
 
 type CampaignStats {
+  Created: Int
+  Sent: Int
+  Delivered: Int
+  Complaint: Int
+  Rejected: Int
+  Bounce: Int
+  Opened: Int
+  Responded: Int
+}
+
+input NotifyCampaignUpdate {
+  id: String
+  uid: String
+  created: Long
+  updated: Long
+  name: String
+  from: String
+  questionText: String
+  destinations: [DestinationInput]
+  stats: CampaignStatsInput
+}
+
+input CampaignStatsInput {
   Created: Int
   Sent: Int
   Delivered: Int

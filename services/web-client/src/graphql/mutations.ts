@@ -28,3 +28,30 @@ export const createCampaign = /* GraphQL */ `
     }
   }
 `;
+export const notifyCampaignUpdate = /* GraphQL */ `
+  mutation NotifyCampaignUpdate($data: NotifyCampaignUpdate!) {
+    notifyCampaignUpdate(data: $data) {
+      id
+      uid
+      created
+      updated
+      name
+      from
+      questionText
+      destinations {
+        name
+        email
+      }
+      stats {
+        Created
+        Sent
+        Delivered
+        Complaint
+        Rejected
+        Bounce
+        Opened
+        Responded
+      }
+    }
+  }
+`;

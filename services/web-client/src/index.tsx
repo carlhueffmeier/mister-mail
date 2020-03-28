@@ -1,10 +1,71 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
-import App from './components/App';
+import { BrowserRouter as Router } from 'react-router-dom';
+import Amplify from '@aws-amplify/core';
+import Auth from '@aws-amplify/auth';
+import { withAuthenticator } from 'aws-amplify-react';
+import { createAuthLink, AuthOptions, AUTH_TYPE } from 'aws-appsync-auth-link';
+import { createSubscriptionHandshakeLink } from 'aws-appsync-subscription-link';
+import ApolloClient from 'apollo-client';
+import { ApolloProvider } from '@apollo/react-common';
+import { ApolloLink } from 'apollo-link';
+import { InMemoryCache } from 'apollo-cache-inmemory';
 import * as serviceWorker from './serviceWorker';
+import App from './components/App';
+import { config } from './config';
+import './index.css';
 
-ReactDOM.render(<App />, document.getElementById('root'));
+async function getJwtToken() {
+  return (await Auth.currentSession()).getIdToken().getJwtToken();
+}
+
+Amplify.configure({
+  Auth: {
+    mandatorySignIn: true,
+    identityPoolId: config.identityPoolId,
+    region: config.region,
+    userPoolId: config.userPoolId,
+    userPoolWebClientId: config.userPoolWebClientId,
+  },
+  aws_appsync_graphqlEndpoint: config.graphQlApiUrl,
+  aws_appsync_region: config.region,
+  aws_appsync_authenticationType: AUTH_TYPE.AMAZON_COGNITO_USER_POOLS,
+  // By default Amplify will use the accessToken instead of the idToken.
+  // The accessToken does not include the claims with custom attributes like user email.
+  graphql_headers: async () => ({ Authorization: await getJwtToken() }),
+});
+
+const apolloConfig = {
+  url: config.graphQlApiUrl,
+  region: config.region,
+  auth: {
+    type: AUTH_TYPE.AMAZON_COGNITO_USER_POOLS,
+    jwtToken: getJwtToken,
+  } as AuthOptions,
+};
+
+const apolloClient = new ApolloClient({
+  link: ApolloLink.from([
+    createAuthLink(apolloConfig),
+    createSubscriptionHandshakeLink(apolloConfig),
+  ]),
+  cache: new InMemoryCache(),
+  defaultOptions: {
+    watchQuery: {
+      fetchPolicy: 'cache-and-network',
+    },
+  },
+});
+
+const RootComponent = withAuthenticator(() => (
+  <ApolloProvider client={apolloClient}>
+    <Router>
+      <App />
+    </Router>
+  </ApolloProvider>
+));
+
+ReactDOM.render(<RootComponent />, document.getElementById('root'));
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
