@@ -2,13 +2,12 @@ Resources:
   CognitoIdentityPool:
     Type: AWS::Cognito::IdentityPool
     Properties:
-      IdentityPoolName: ${self:custom.stage}-identity-pool
+      IdentityPoolName: CognitoIdentityPool-${self:custom.stage}
       AllowUnauthenticatedIdentities: false
       CognitoIdentityProviders:
         - ClientId:
             Ref: CognitoUserPoolClient
-          ProviderName:
-            Fn::GetAtt: [CognitoUserPool, ProviderName]
+          ProviderName: !GetAtt CognitoUserPool.ProviderName
 
   CognitoIdentityPoolRoles:
     Type: AWS::Cognito::IdentityPoolRoleAttachment
@@ -16,8 +15,7 @@ Resources:
       IdentityPoolId:
         Ref: CognitoIdentityPool
       Roles:
-        authenticated:
-          Fn::GetAtt: [CognitoAuthRole, Arn]
+        authenticated: !GetAtt CognitoAuthRole.Arn
 
   CognitoAuthRole:
     Type: AWS::IAM::Role
@@ -26,23 +24,21 @@ Resources:
       AssumeRolePolicyDocument:
         Version: "2012-10-17"
         Statement:
-          - Effect: "Allow"
+          - Effect: Allow
             Principal:
-              Federated: "cognito-identity.amazonaws.com"
-            Action:
-              - "sts:AssumeRoleWithWebIdentity"
+              Federated: cognito-identity.amazonaws.com
+            Action: sts:AssumeRoleWithWebIdentity
             Condition:
               StringEquals:
-                "cognito-identity.amazonaws.com:aud":
-                  Ref: CognitoIdentityPool
-              "ForAnyValue:StringLike":
-                "cognito-identity.amazonaws.com:amr": authenticated
+                cognito-identity.amazonaws.com:aud: !Ref CognitoIdentityPool
+              ForAnyValue:StringLike:
+                cognito-identity.amazonaws.com:amr: authenticated
       Policies:
-        - PolicyName: "CognitoAuthorizedPolicy"
+        - PolicyName: CognitoAuthorizedPolicy
           PolicyDocument:
             Version: "2012-10-17"
             Statement:
-              - Effect: "Allow"
+              - Effect: Allow
                 Action:
                   - "mobileanalytics:PutEvents"
                   - "cognito-sync:*"

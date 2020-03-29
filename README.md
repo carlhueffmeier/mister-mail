@@ -38,14 +38,32 @@ As is the nature with architecture diagrams, expect this to be either aspiration
 
 The API ID is available at https://console.aws.amazon.com/appsync/home?region=us-east-1.
 
-Any time we modify the schema, we can re-generate the types by running `amplify codegen` inside the `services/web-client` folder.
+4. Edit the `config.ts` file in the `services/web-client` folder. You can find all the required values in the [AWS console for Cognito](https://console.aws.amazon.com/cognito).
+
+```js
+export const config = {
+  identityPoolId: 'us-east-1:XXXXXXXXXX',
+  userPoolId: 'us-east-1_XXXXXXXXXX',
+  userPoolWebClientId: 'XXXXXXXXXX',
+}
+```
 
 ## Development
 
 ### Validate changes to the GraphQL schema
 
 ```bash
-npm run appsync:validate
+> npm run appsync:validate
+```
+
+Any time we modify the schema, we can re-generate the types for the client application by running `amplify codegen` inside the `services/web-client` folder.
+
+### Remove Amplify API association from web-client
+
+In case you re-created the API, you need to remove the old API before associating the new one.
+
+```bash
+amplify codegen remove
 ```
 
 ### Manual Sign-up
@@ -78,10 +96,9 @@ But the log group of the Lambda function is not cleaned up automatically. This c
 
 The solution is easy enough.
 
-- Go to the [Cloud Watch log groups page](https://console.aws.amazon.com/cloudwatch/home#logs:)
-- Select your region
-- Select the log group mentioned in the error messsage
-- Click **Actions -> Delete log group**
+```sh
+> aws logs delete-log-group --log-group-name "/aws/lambda/mister-mail-dev-ConfigureSesEvents"
+```
 
 ## DynamoDB Schema
 

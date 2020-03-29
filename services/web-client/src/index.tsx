@@ -13,6 +13,7 @@ import { InMemoryCache } from 'apollo-cache-inmemory';
 import * as serviceWorker from './serviceWorker';
 import App from './components/App';
 import { config } from './config';
+import appSyncConfig from './aws-exports';
 import './index.css';
 
 async function getJwtToken() {
@@ -22,13 +23,13 @@ async function getJwtToken() {
 Amplify.configure({
   Auth: {
     mandatorySignIn: true,
+    region: appSyncConfig.aws_project_region,
     identityPoolId: config.identityPoolId,
-    region: config.region,
     userPoolId: config.userPoolId,
     userPoolWebClientId: config.userPoolWebClientId,
   },
-  aws_appsync_graphqlEndpoint: config.graphQlApiUrl,
-  aws_appsync_region: config.region,
+  aws_appsync_graphqlEndpoint: appSyncConfig.aws_appsync_graphqlEndpoint,
+  aws_appsync_region: appSyncConfig.aws_appsync_region,
   aws_appsync_authenticationType: AUTH_TYPE.AMAZON_COGNITO_USER_POOLS,
   // By default Amplify will use the accessToken instead of the idToken.
   // The accessToken does not include the claims with custom attributes like user email.
@@ -36,8 +37,8 @@ Amplify.configure({
 });
 
 const apolloConfig = {
-  url: config.graphQlApiUrl,
-  region: config.region,
+  url: appSyncConfig.aws_appsync_graphqlEndpoint,
+  region: appSyncConfig.aws_project_region,
   auth: {
     type: AUTH_TYPE.AMAZON_COGNITO_USER_POOLS,
     jwtToken: getJwtToken,

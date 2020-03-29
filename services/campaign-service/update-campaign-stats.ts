@@ -5,11 +5,17 @@ import { SNSEvent } from 'aws-lambda';
 import { wrapSnsHandler } from '../../lib/middleware';
 import { EmailStatusEvent } from '../../lib/types';
 import { config } from './config';
+import { AppSyncClient } from '../../lib/appsync-client';
+import { notifyCampaignUpdate } from '../../lib/graphql-operations';
 import 'source-map-support/register';
 
 const campaignRepository = new CampaignRepository({
   dynamoDbDocumentClient: DynamoDb,
   tableName: config.DYNAMODB_CAMPAIGN_TABLE,
+  logger: Log,
+});
+const appSyncClient = new AppSyncClient({
+  appSyncEndpoint: config.APPSYNC_ENDPOINT,
   logger: Log,
 });
 
@@ -54,11 +60,29 @@ const handler = wrapSnsHandler(
     const emailStatusEvent = (event.Records[0].Sns
       .Message as unknown) as EmailStatusEvent;
 
-    await campaignRepository.increment(
+    const updatedCampaign = await campaignRepository.increment(
       emailStatusEvent.email.uid,
       emailStatusEvent.email.campaignId,
       emailStatusEvent.email.status,
     );
+    // This triggers GraphQL subscription updates on all connected clients
+    await appSyncClient.request({
+      operationName: 'NotifyCampaignUpdate',
+      variables: {
+        data: {
+          id: updatedCampaign.id,
+          uid: updatedCampaign.uid,
+          created: updatedCampaign.created,
+          updated: updatedCampaign.updated,
+          name: updatedCampaign.name,
+          from: updatedCampaign.from,
+          questionText: updatedCampaign.questionText,
+          destinations: updatedCampaign.destinations,
+          stats: updatedCampaign.stats,
+        },
+      },
+      query: notifyCampaignUpdate,
+    });
   },
   { inputSchema },
 );

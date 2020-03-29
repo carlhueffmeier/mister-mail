@@ -1,61 +1,49 @@
 Resources:
   AppSyncDynamoDbServiceRole:
-    Type: "AWS::IAM::Role"
+    Type: AWS::IAM::Role
     Properties:
-      RoleName: "Dynamo-${self:service}-Role"
+      RoleName: AppSyncDynamoDbServiceRole-${self:custom.stage}
       AssumeRolePolicyDocument:
         Version: "2012-10-17"
         Statement:
-          -
-            Effect: "Allow"
+          - Effect: Allow
             Principal:
               Service:
-                - "appsync.amazonaws.com"
-                - "dynamodb.amazonaws.com"
-            Action:
-              - "sts:AssumeRole"
+                - appsync.amazonaws.com
+                - dynamodb.amazonaws.com
+            Action: sts:AssumeRole
       Policies:
-        -
-          PolicyName: "Dynamo-${self:service}-Policy"
+        - PolicyName: AppSyncDynamoDbServicePolicy-${self:custom.stage}
           PolicyDocument:
             Version: "2012-10-17"
             Statement:
-              -
-                Effect: "Allow"
+              - Effect: Allow
                 Action:
-                  - "dynamodb:Query"
-                  - "dynamodb:BatchWriteItem"
-                  - "dynamodb:GetItem"
-                  - "dynamodb:DeleteItem"
-                  - "dynamodb:PutItem"
-                  - "dynamodb:Scan"
-                  - "dynamodb:UpdateItem"
-                Resource:
-                  - ${self:custom.campaigns-table-arn}
+                  - dynamodb:Query
+                  - dynamodb:BatchWriteItem
+                  - dynamodb:GetItem
+                  - dynamodb:DeleteItem
+                  - dynamodb:PutItem
+                  - dynamodb:Scan
+                  - dynamodb:UpdateItem
+                Resource: ${self:custom.campaigns-table-arn}
 
   AppSyncLoggingServiceRole:
-    Type: "AWS::IAM::Role"
+    Type: AWS::IAM::Role
     Properties:
-      RoleName: "CloudwatchLogging-${self:service}-Role"
+      RoleName: AppSyncLoggingServiceRole-${self:custom.stage}
       AssumeRolePolicyDocument:
         Version: "2012-10-17"
         Statement:
-          -
-            Effect: "Allow"
+          - Effect: Allow
             Principal:
-              Service:
-                - "appsync.amazonaws.com"
-            Action:
-              - "sts:AssumeRole"
+              Service: appsync.amazonaws.com
+            Action: sts:AssumeRole
       Policies:
-        -
-          PolicyName: "CloudwatchLogging-${self:service}-Policy"
+        - PolicyName: AppSyncLoggingServicePolicy-${self:custom.stage}
           PolicyDocument:
             Version: "2012-10-17"
             Statement:
-              -
-                Effect: "Allow"
-                Action:
-                  - "cloudwatch:*"
-                Resource:
-                  - "*"
+              - Effect: Allow
+                Action: "cloudwatch:*"
+                Resource: "*"

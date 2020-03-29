@@ -13,7 +13,7 @@ export type DestinationInput = {
   email: string,
 };
 
-export type NotifyCampaignUpdate = {
+export type NotifyCampaignUpdateInput = {
   id?: string | null,
   uid?: string | null,
   created?: string | null,
@@ -70,7 +70,7 @@ export type CreateCampaignMutation = {
 };
 
 export type NotifyCampaignUpdateMutationVariables = {
-  data: NotifyCampaignUpdate,
+  data: NotifyCampaignUpdateInput,
 };
 
 export type NotifyCampaignUpdateMutation = {
@@ -99,7 +99,7 @@ export type NotifyCampaignUpdateMutation = {
       Opened: number | null,
       Responded: number | null,
     },
-  },
+  } | null,
 };
 
 export type GetCampaignsQuery = {
@@ -157,5 +157,5 @@ export type CampaignUpdateSubscription = {
       Opened: number | null,
       Responded: number | null,
     },
-  },
+  } | null,
 };

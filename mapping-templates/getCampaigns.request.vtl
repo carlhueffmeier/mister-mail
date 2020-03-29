@@ -4,7 +4,7 @@
   "query" : {
     "expression" : "pk = :uid and begins_with(sk, :prefix)",
     "expressionValues" : {
-      ":uid": $util.dynamodb.toDynamoDBJson($context.identity.sub),
+      ":uid": $util.dynamodb.toDynamoDBJson($ctx.identity.sub),
       ":prefix": { "S": "C-" }
     }
   },

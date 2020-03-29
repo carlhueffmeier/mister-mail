@@ -25,8 +25,3 @@ Resources:
       ServiceToken: !GetAtt ConfigureSesEventsLambdaFunction.Arn
       SesConfigurationSet: ${self:custom.ses-configuration-set}
       SnsTopicArn: !Ref SesEventsTopic
-
-Outputs:
-  SesConfigurationSet:
-    Value:
-      Ref: SesConfigurationSet

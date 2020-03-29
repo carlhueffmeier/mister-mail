@@ -2,7 +2,7 @@ Resources:
   CognitoUserPool:
     Type: AWS::Cognito::UserPool
     Properties:
-      UserPoolName: ${self:custom.stage}-user-pool
+      UserPoolName: CognitoUserPool-${self:custom.stage}
       # Set email as an alias
       UsernameAttributes:
         - email
@@ -12,19 +12,10 @@ Resources:
   CognitoUserPoolClient:
     Type: AWS::Cognito::UserPoolClient
     Properties:
-      ClientName: ${self:custom.stage}-user-pool-client
+      ClientName: CognitoUserPoolClient-${self:custom.stage}
       UserPoolId:
         Ref: CognitoUserPool
       ExplicitAuthFlows:
         - ADMIN_NO_SRP_AUTH
         - USER_PASSWORD_AUTH
       GenerateSecret: false
-
-Outputs:
-  UserPoolId:
-    Value:
-      Ref: CognitoUserPool
-
-  UserPoolClientId:
-    Value:
-      Ref: CognitoUserPoolClient

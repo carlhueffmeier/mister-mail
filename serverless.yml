@@ -24,6 +24,8 @@ custom:
       defaultAction: ALLOW
       userPoolId: !Ref CognitoUserPool
       playgroundClientId: !Ref CognitoUserPoolClient
+    additionalAuthenticationProviders:
+      - authenticationType: AWS_IAM
     logConfig:
       loggingRoleArn: !GetAtt AppSyncLoggingServiceRole.Arn
       level: ALL
@@ -84,6 +86,8 @@ provider:
     minimumCompressionSize: 1024 # Enable gzip compression for responses > 1 KB
   environment:
     AWS_NODEJS_CONNECTION_REUSE_ENABLED: 1
+    # Caution! This depends on the implementation of serverless-appsync-plugin
+    APPSYNC_ENDPOINT: !GetAtt GraphQlApi.GraphQLUrl
     DYNAMODB_CAMPAIGN_TABLE: ${self:custom.campaigns-table}
     SNS_CAMPAIGNS_TOPIC_ARN: ${self:custom.campaigns-topic-arn}
     SNS_SES_EVENTS_TOPIC_ARN: ${self:custom.ses-events-topic-arn}
@@ -115,6 +119,10 @@ provider:
         - ses:DeleteConfigurationSetEventDestination
       Resource:
         - "*"
+    - Effect: Allow
+      Action:
+        - appsync:GraphQL
+      Resource: "*"
 
 functions:
   CreateCampaign:

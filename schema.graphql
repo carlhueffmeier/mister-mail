@@ -10,7 +10,8 @@ type Query {
 
 type Mutation {
   createCampaign(data: CreateCampaignInput!): Campaign!
-  notifyCampaignUpdate(data: NotifyCampaignUpdate!): Campaign!
+  notifyCampaignUpdate(data: NotifyCampaignUpdateInput!): Campaign!
+    @aws_iam @aws_cognito_user_pools
 }
 
 type Subscription {
@@ -29,11 +30,11 @@ input DestinationInput {
   email: String!
 }
 
-type Campaign {
+type Campaign @aws_iam @aws_cognito_user_pools {
   id: String!
   uid: String!
-  created: Long!
-  updated: Long!
+  created: Int!
+  updated: Int!
   name: String!
   from: String!
   questionText: String!
@@ -41,12 +42,12 @@ type Campaign {
   stats: CampaignStats!
 }
 
-type Destination {
+type Destination @aws_iam @aws_cognito_user_pools {
   name: String!
   email: String!
 }
 
-type CampaignStats {
+type CampaignStats @aws_iam @aws_cognito_user_pools {
   Created: Int
   Sent: Int
   Delivered: Int
@@ -57,11 +58,11 @@ type CampaignStats {
   Responded: Int
 }
 
-input NotifyCampaignUpdate {
+input NotifyCampaignUpdateInput {
   id: String
   uid: String
-  created: Long
-  updated: Long
+  created: Int
+  updated: Int
   name: String
   from: String
   questionText: String

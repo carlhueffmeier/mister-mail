@@ -53,7 +53,7 @@ export class CampaignRepository {
     uid: string,
     campaignId: string,
     status: string,
-  ): Promise<void> {
+  ): Promise<CampaignDynamoDbRecord> {
     const updateParams = {
       TableName: this.tableName,
       Key: {
@@ -65,12 +65,16 @@ export class CampaignRepository {
         ':zero': 0,
         ':one': 1,
       },
+      ReturnValues: 'ALL_NEW',
     };
     this.logger.debug('Updating stats', { uid, campaignId, status });
-    await this.dynamoDbDocumentClient.update(updateParams).promise();
+    const result = await this.dynamoDbDocumentClient
+      .update(updateParams)
+      .promise();
+    return result.Attributes as CampaignDynamoDbRecord;
   }
 
-  async findAllByUserId(uid: string): Promise<CreateCampaignRequest[]> {
+  async findAllByUserId(uid: string): Promise<CampaignDynamoDbRecord[]> {
     const queryParams: DynamoDB.DocumentClient.QueryInput = {
       TableName: this.tableName,
       KeyConditionExpression: 'pk = :uid and begins_with(sk, :prefix)',
@@ -82,6 +86,6 @@ export class CampaignRepository {
     const result = await this.dynamoDbDocumentClient
       .query(queryParams)
       .promise();
-    return result.Items as CreateCampaignRequest[];
+    return result.Items as CampaignDynamoDbRecord[];
   }
 }

@@ -29,7 +29,7 @@ function mergeQueryWithSubscriptionData(
     getCampaigns: uniqBy(
       [next.subscriptionData.data.campaignUpdate, ...prev.getCampaigns],
       'id',
-    ),
+    ) as GetCampaignsQuery['getCampaigns'],
   };
 }
 
