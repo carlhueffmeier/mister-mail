@@ -4,10 +4,10 @@ Friendly mass mailer.
 
 ## Architecture
 
-A very rough first-iteration whiteboard-architecture draft. Expect this to be slightly out-of-date.
+As is the nature with architecture diagrams, expect this to be either aspirational or horribly out-of-date.
 
 <a href="https://drive.google.com/file/d/12FSTrMZs5HWeGkN_7h481OHAxGHd0cRv/view?usp=sharing">
-<img src="https://user-images.githubusercontent.com/27681148/77238769-bbb9aa00-6bd3-11ea-83d0-c3ec02fb49b9.png" width="640"></img>
+<img src="doc/mister-mail-aws.vpd.png" width="640"></img>
 </a>
 
 ## Setup
@@ -38,7 +38,7 @@ A very rough first-iteration whiteboard-architecture draft. Expect this to be sl
 
 The API ID is available at https://console.aws.amazon.com/appsync/home?region=us-east-1.
 
-Any time we modify the schema, we can re-generate the types with `amplify codegen`.
+Any time we modify the schema, we can re-generate the types by running `amplify codegen` inside the `services/web-client` folder.
 
 ## Development
 
@@ -85,17 +85,20 @@ The solution is easy enough.
 
 ## DynamoDB Schema
 
-| PK          | SK           | Content                           |
-| ----------- | ------------ | --------------------------------- |
-| UserId      | user         | User data                         |
-|             | C-CampaignId | Campaign data for campaign (id=1) |
-| M-MessageId | mail         | Message status                    |
+| PK          | SK           | Content                                                 |
+| ----------- | ------------ | ------------------------------------------------------- |
+| U-userId    | C-campaignId | name, destinations, email stats and other campaign info |
+| M-messageId | mail         | user id, campaign id, message status                    |
+
+In case you are wondering why the mails are not in the user partition: I am too lazy to send raw emails just to attach a custom header containing the required info.
+If user and campaign would be included in the email event, it would save an additional Lambda invocation that updates the campaign stats and make life sparkly and wonderful.
 
 ### Access Patterns
 
 | Get           | By                        | Using              |
 | ------------- | ------------------------- | ------------------ |
-| User Data     | User Id                   | Query PK+SK        |
 | All campaigns | User Id                   | Query PK+SK prefix |
 | Campaign      | User Id + Campaign Id     | Query PK+SK        |
 | Message       | Campaign Id + Destination | ???                |
+
+The last access pattern is not currently supported. I.e. you can't see which email was opened / bounced etc. Obviously that doesn't make sense! It's a work in progress.
