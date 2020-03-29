@@ -48,7 +48,7 @@ Any time we modify the schema, we can re-generate the types by running `amplify 
 npm run appsync:validate
 ```
 
-## Manual Sign-up
+### Manual Sign-up
 
 This is how you can create a new user via the AWS CLI.
 
