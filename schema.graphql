@@ -16,18 +16,7 @@ type Mutation {
 
 type Subscription {
   campaignUpdate: Campaign
-  @aws_subscribe(mutations: ["createCampaign", "notifyCampaignUpdate"])
-}
-
-input CreateCampaignInput {
-  name: String!
-  questionText: String!
-  destinations: [DestinationInput!]!
-}
-
-input DestinationInput {
-  name: String!
-  email: String!
+    @aws_subscribe(mutations: ["createCampaign", "notifyCampaignUpdate"])
 }
 
 type Campaign @aws_iam @aws_cognito_user_pools {
@@ -58,6 +47,12 @@ type CampaignStats @aws_iam @aws_cognito_user_pools {
   Responded: Int
 }
 
+input CreateCampaignInput {
+  name: String!
+  questionText: String!
+  destinations: [DestinationInput!]!
+}
+
 input NotifyCampaignUpdateInput {
   id: String
   uid: String
@@ -68,6 +63,11 @@ input NotifyCampaignUpdateInput {
   questionText: String
   destinations: [DestinationInput]
   stats: CampaignStatsInput
+}
+
+input DestinationInput {
+  name: String!
+  email: String!
 }
 
 input CampaignStatsInput {
