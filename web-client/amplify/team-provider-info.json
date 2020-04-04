@@ -1,0 +1,15 @@
+{
+    "dev": {
+        "awscloudformation": {
+            "AuthRoleName": "amplify-mistermailwebclient-dev-232518-authRole",
+            "UnauthRoleArn": "arn:aws:iam::300124348950:role/amplify-mistermailwebclient-dev-232518-unauthRole",
+            "AuthRoleArn": "arn:aws:iam::300124348950:role/amplify-mistermailwebclient-dev-232518-authRole",
+            "Region": "us-east-1",
+            "DeploymentBucketName": "amplify-mistermailwebclient-dev-232518-deployment",
+            "UnauthRoleName": "amplify-mistermailwebclient-dev-232518-unauthRole",
+            "StackName": "amplify-mistermailwebclient-dev-232518",
+            "StackId": "arn:aws:cloudformation:us-east-1:300124348950:stack/amplify-mistermailwebclient-dev-232518/ca7e9770-76ba-11ea-a67d-0e763951b664",
+            "AmplifyAppId": "d25tz7emja5335"
+        }
+    }
+}

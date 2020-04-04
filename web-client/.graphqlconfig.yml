@@ -1,0 +1,15 @@
+projects:
+  AppSync-mister-mail-api-dev:
+    schemaPath: src/graphql/schema.json
+    includes:
+      - src/graphql/**/*.ts
+    excludes:
+      - ./amplify/**
+    extensions:
+      amplify:
+        codeGenTarget: typescript
+        generatedFileName: src/graphql/types.ts
+        docsFilePath: src/graphql
+        region: us-east-1
+        apiId: kfuem4qnorgnrdczfzhck3l44u
+        maxDepth: 2

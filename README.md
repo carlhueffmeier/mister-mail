@@ -18,27 +18,49 @@ As is the nature with architecture diagrams, expect this to be either aspiration
 
 ## Deploy
 
-1. To deploy the application, simply run this command in the project root.
+1. To deploy the API, simply run this command in the project root.
 
 ```bash
-> npm run deploy
+> npm run deploy:api
 ```
 
-2. Next, initialize amplify in the `services/web-client` folder.
+2. Next, initialize amplify in the `web-client` folder.
 
 ```bash
-> amplify init
+(web-client) > npm run amplify:init
 ```
 
-3. Associate the app with your API.
+3. Find your API id using the AWS CLI.
 
 ```bash
-> amplify add codegen --apiId <API_ID_HERE>
+(web-client) > aws appsync list-graphql-apis
 ```
 
-The API ID is available at https://console.aws.amazon.com/appsync/home?region=us-east-1.
+4. Associate the app with your API.
 
-4. Edit the `config.ts` file in the `services/web-client` folder. You can find all the required values in the [AWS console for Cognito](https://console.aws.amazon.com/cognito).
+```bash
+(web-client) > amplify add codegen --apiId <API_ID_HERE>
+✔ Getting API details
+Successfully added API AppSync-mister-mail-api-dev to your Amplify project
+? Choose the code generation language target **typescript**
+? Enter the file name pattern of graphql queries, mutations and subscriptions **src/graphql/**/*.ts**
+? Do you want to generate/update all possible GraphQL operations - queries, mutations and subscriptions **Yes**
+? Enter maximum statement depth [increase from default if your schema is deeply nested] **2**
+? Enter the file name for the generated code **src/graphql/types.ts**
+? Do you want to generate code for your newly created GraphQL API **Yes**
+✔ Downloaded the schema
+✔ Generated GraphQL operations successfully and saved at src/graphql
+✔ Code generated successfully and saved in file src/graphql/types.ts
+```
+
+5. Fill in the `config.js` values using the exports from Cloudformation you can retrieve via the AWS CLI.
+
+```bash
+(web-client) > aws cloudformation list-exports
+(web-client) > cp src/config.example.js src/config.js
+```
+
+Use your editor of choice to fill in the values.
 
 ```js
 export const config = {
@@ -48,12 +70,24 @@ export const config = {
 }
 ```
 
+6. Lastly deploy the client
+
+```bash
+(web-client) > npm run deploy
+```
+
+This will create the required resources, build the project and upload it to S3. You can find the URL of your CloudFront distribution via the AWS CLI.
+
+```bash
+> aws cloudfront list-distributions --query "DistributionList.Items[*].{DomainName:DomainName}"
+```
+
 ## Development
 
 ### Validate changes to the GraphQL schema
 
 ```bash
-> npm run appsync:validate
+(backend) > npm run appsync:validate
 ```
 
 Any time we modify the schema, we can re-generate the types for the client application by running `amplify codegen` inside the `services/web-client` folder.

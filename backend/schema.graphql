@@ -1,0 +1,87 @@
+schema {
+  query: Query
+  mutation: Mutation
+  subscription: Subscription
+}
+
+type Query {
+  getCampaigns: [Campaign!]!
+  getCampaign(where: CampaignWhereUniqueInput!): Campaign
+}
+
+type Mutation {
+  createCampaign(data: CreateCampaignInput!): Campaign!
+  notifyCampaignUpdate(data: NotifyCampaignUpdateInput!): Campaign!
+    @aws_iam @aws_cognito_user_pools
+}
+
+type Subscription {
+  campaignUpdate: Campaign
+    @aws_subscribe(mutations: ["createCampaign", "notifyCampaignUpdate"])
+}
+
+type Campaign @aws_iam @aws_cognito_user_pools {
+  id: String!
+  uid: String!
+  created: Int!
+  updated: Int!
+  name: String!
+  from: String!
+  questionText: String!
+  destinations: [Destination!]!
+  stats: CampaignStats!
+}
+
+type Destination @aws_iam @aws_cognito_user_pools {
+  name: String!
+  email: String!
+}
+
+type CampaignStats @aws_iam @aws_cognito_user_pools {
+  Created: Int
+  Sent: Int
+  Delivered: Int
+  Complaint: Int
+  Rejected: Int
+  Bounce: Int
+  Opened: Int
+  Responded: Int
+}
+
+input CampaignWhereUniqueInput {
+  id: ID!
+}
+
+input CreateCampaignInput {
+  name: String!
+  questionText: String!
+  destinations: [DestinationInput!]!
+}
+
+input NotifyCampaignUpdateInput {
+  id: String
+  uid: String
+  created: Int
+  updated: Int
+  name: String
+  from: String
+  questionText: String
+  destinations: [DestinationInput]
+  stats: CampaignStatsInput
+}
+
+input DestinationInput {
+  name: String!
+  email: String!
+}
+
+input CampaignStatsInput {
+  Created: Int
+  Sent: Int
+  Delivered: Int
+  Complaint: Int
+  Rejected: Int
+  Bounce: Int
+  Opened: Int
+  Responded: Int
+}
