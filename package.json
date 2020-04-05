@@ -9,7 +9,10 @@
     "install:api": "cd backend && npm install",
     "install:client": "cd web-client && npm install",
     "deploy:api": "cd backend && npm run deploy",
-    "deploy:client": "cd web-client && npm run deploy"
+    "deploy:client": "cd web-client && npm run deploy",
+    "appsync:codegen": "concurrently \"npm:appsync:codegen:api\" \"npm:appsync:codegen:client\"",
+    "appsync:codegen:api": "cd backend && npm run appsync:codegen",
+    "appsync:codegen:client": "cd web-client && npm run appsync:codegen"
   },
   "repository": {
     "type": "git",
@@ -18,5 +21,8 @@
   "bugs": {
     "url": "https://github.com/carlhueffmeier/mister-mail/issues"
   },
-  "homepage": "https://github.com/carlhueffmeier/mister-mail#readme"
+  "homepage": "https://github.com/carlhueffmeier/mister-mail#readme",
+  "devDependencies": {
+    "concurrently": "^5.1.0"
+  }
 }

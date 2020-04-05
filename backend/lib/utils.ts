@@ -17,3 +17,7 @@ export function getConfig(
     {},
   );
 }
+
+export function getEpochSeconds(): number {
+  return Math.floor(Date.now() / 1000);
+}

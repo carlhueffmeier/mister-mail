@@ -97,7 +97,7 @@ Any time we modify the schema, we can re-generate the types for the client appli
 In case you re-created the API, you need to remove the old API before associating the new one.
 
 ```bash
-amplify codegen remove
+(web-client) amplify codegen remove
 ```
 
 ### Manual Sign-up

@@ -38,6 +38,7 @@
   },
   "scripts": {
     "amplify:init": "./bin/amplify-init.sh",
+    "appsync:codegen": "amplify codegen",
     "deploy": "npm run deploy:resources && npm run build && npm run deploy:client",
     "deploy:resources": "serverless deploy",
     "deploy:client": "serverless client deploy --no-confirm",

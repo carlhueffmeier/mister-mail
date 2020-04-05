@@ -23,8 +23,8 @@ type Subscription {
 type Campaign @aws_iam @aws_cognito_user_pools {
   id: String!
   uid: String!
-  created: Int!
-  updated: Int!
+  created: AWSTimestamp!
+  updated: AWSTimestamp!
   name: String!
   from: String!
   questionText: String!
@@ -61,8 +61,8 @@ input CreateCampaignInput {
 input NotifyCampaignUpdateInput {
   id: String
   uid: String
-  created: Int
-  updated: Int
+  created: AWSTimestamp
+  updated: AWSTimestamp
   name: String
   from: String
   questionText: String

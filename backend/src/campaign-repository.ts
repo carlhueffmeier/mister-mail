@@ -2,6 +2,7 @@ import * as uuid from 'uuid';
 import { DynamoDB } from 'aws-sdk';
 import Log from '@dazn/lambda-powertools-logger';
 import { CreateCampaignRequest, CampaignDynamoDbRecord } from './types';
+import { getEpochSeconds } from '../lib/utils';
 
 export class CampaignRepository {
   dynamoDbDocumentClient: DynamoDB.DocumentClient;
@@ -21,7 +22,7 @@ export class CampaignRepository {
   async create(
     createData: Readonly<CreateCampaignRequest>,
   ): Promise<CampaignDynamoDbRecord> {
-    const timestamp = Date.now();
+    const timestamp = getEpochSeconds();
     const id = uuid.v1();
     const newItem: CampaignDynamoDbRecord = {
       pk: createData.uid,

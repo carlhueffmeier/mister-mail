@@ -3,6 +3,7 @@ import Log from '@dazn/lambda-powertools-logger';
 import { EmailDynamoDbRecord } from '../types';
 import { EmailStatus } from '../types';
 import { Email } from '../types';
+import { getEpochSeconds } from '../../lib/utils';
 
 export * from '../types';
 export class EmailRepository {
@@ -15,7 +16,7 @@ export class EmailRepository {
   }
 
   async create(createData: Readonly<Email>): Promise<EmailDynamoDbRecord> {
-    const timestamp = Date.now();
+    const timestamp = getEpochSeconds();
     return {
       pk: createData.messageId,
       sk: `mail`,
