@@ -26,7 +26,7 @@ export class CampaignRepository {
     const id = uuid.v1();
     const newItem: CampaignDynamoDbRecord = {
       pk: createData.uid,
-      sk: `C-${id}`,
+      sk: ['C', id].join('#'),
       id: id,
       uid: createData.uid,
       created: timestamp,
@@ -55,7 +55,7 @@ export class CampaignRepository {
       TableName: this.tableName,
       Key: {
         pk: uid,
-        sk: `C-${campaignId}`,
+        sk: ['C', campaignId].join('#'),
       },
       UpdateExpression: `set stats.${status} = if_not_exists(stats.${status}, :zero) + :one`,
       ExpressionAttributeValues: {
@@ -77,7 +77,7 @@ export class CampaignRepository {
       KeyConditionExpression: 'pk = :uid and begins_with(sk, :prefix)',
       ExpressionAttributeValues: {
         ':uid': uid,
-        ':prefix': 'C-',
+        ':prefix': 'C#',
       },
     };
     const result = await this.dynamoDbDocumentClient

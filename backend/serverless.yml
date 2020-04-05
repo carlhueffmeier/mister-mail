@@ -19,6 +19,7 @@ custom:
   emails-topic: EmailsTopic-${self:service}-${self:custom.stage}
   emails-topic-arn: "arn:aws:sns:${self:custom.region}:#{AWS::AccountId}:${self:custom.emails-topic}"
   ses-configuration-set: SesConfigurationSet-${self:service}-${self:custom.stage}
+  api-gateway-url: "https://#{ApiGatewayRestApi}.execute-api.${self:custom.region}.amazonaws.com/${self:custom.stage}"
   webpack:
     webpackConfig: ./webpack.config.js
     excludeFiles: ./**/*.spec.ts
@@ -96,6 +97,7 @@ provider:
     SNS_SES_EVENTS_TOPIC_ARN: ${self:custom.ses-events-topic-arn}
     SNS_EMAILS_TOPIC_ARN: ${self:custom.emails-topic-arn}
     SES_CONFIGURATION_SET: ${self:custom.ses-configuration-set}
+    API_GATEWAY_URL: ${self:custom.api-gateway-url}
   iamRoleStatements:
     - Effect: Allow
       Action:
@@ -147,6 +149,13 @@ functions:
       - sns:
           arn: !Ref SesEventsTopic
           topicName: ${self:custom.ses-events-topic}
+    
+  HandleTargetResponse:
+    handler: src/handle-target-response.handler
+    events:
+      - http:
+          path: respond
+          method: get
 
   # Only used during Cloudformation execution
   ConfigureSesEvents:

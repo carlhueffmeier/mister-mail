@@ -72,13 +72,14 @@ const handler = wrapSnsHandler(
     const { campaign } = (event.Records[0].Sns
       .Message as unknown) as CampaignCreatedEvent;
     Log.debug(`Sending email to ${campaign.destinations}`);
+    const respondYesLink = `${config.API_GATEWAY_URL}/respond?response=yes`;
     for (const destination of campaign.destinations) {
       await sendEmailUseCase.sendEmail({
         uid: campaign.uid,
         campaignId: campaign.id,
         subject: campaign.name,
         text: `Hi ${destination.name}!\n The question is: \n\n${campaign.questionText}`,
-        html: `Hi ${destination.name}!<br> The question is: <b>\n\n${campaign.questionText}</b>`,
+        html: `Hi ${destination.name}!<br> The question is: <b>\n\n${campaign.questionText}</b><br><a href="${respondYesLink}">Yes</a>`,
         source: campaign.from,
         destination: destination.email,
       });

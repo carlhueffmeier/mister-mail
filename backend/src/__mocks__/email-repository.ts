@@ -29,11 +29,20 @@ export class EmailRepository {
     };
   }
 
-  async updateStatus(_messageId: string, _status: EmailStatus): Promise<void> {
+  async updateStatus(_updateParams: {
+    uid: string;
+    campaignId: string;
+    messageId: string;
+    status: EmailStatus;
+  }): Promise<void> {
     // Noop
   }
 
-  async findById(_messageId: string): Promise<EmailDynamoDbRecord> {
+  async findOne(_findParams: {
+    uid: string;
+    campaignId: string;
+    messageId: string;
+  }): Promise<EmailDynamoDbRecord> {
     return {} as EmailDynamoDbRecord;
   }
 }

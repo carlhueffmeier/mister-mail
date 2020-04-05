@@ -64,24 +64,31 @@ const inputSchema = {
 interface SesEventMailObject {
   messageId: string;
   destination: string[];
+  timestamp: string;
+  tags: {
+    uid: string[];
+    campaignid: string[];
+  };
 }
 
+type SesEventType =
+  | 'Bounce'
+  | 'Click'
+  | 'Complaint'
+  | 'Delivery'
+  | 'Open'
+  | 'Reject'
+  | 'Send'
+  | 'Rendering Failure';
+
 interface SesEvent {
-  eventType:
-    | 'Bounce'
-    | 'Click'
-    | 'Complaint'
-    | 'Delivered'
-    | 'Open'
-    | 'Reject'
-    | 'Send'
-    | 'Rendering Failure';
+  eventType: SesEventType;
   mail: SesEventMailObject;
 }
 
-const eventToStatusMapping = {
+const eventToStatusMapping: Record<SesEventType, EmailStatus | undefined> = {
   Send: EmailStatus.Sent,
-  Delivered: EmailStatus.Delivered,
+  Delivery: EmailStatus.Delivered,
   Open: EmailStatus.Opened,
   Bounce: EmailStatus.Bounce,
   Complaint: EmailStatus.Complaint,
@@ -102,13 +109,15 @@ const handler = wrapSnsHandler(
     Log.debug(
       `Marking ${sesEvent.mail.messageId} as ${newStatus}, user is ${sesEvent.mail.destination[0]}`,
     );
-    const email = await emailRepository.updateStatus(
-      sesEvent.mail.messageId,
-      newStatus,
-    );
+    const email = await emailRepository.updateStatus({
+      uid: sesEvent.mail.tags.uid[0],
+      campaignId: sesEvent.mail.tags.campaignid[0],
+      messageId: sesEvent.mail.messageId,
+      status: newStatus,
+    });
     const emailStatusEvent: EmailStatusEvent = {
       name: 'EmailStatusEvent',
-      timestamp: Date.now(), // TODO: Use eventTime
+      timestamp: new Date(sesEvent.mail.timestamp).getTime(),
       email,
     };
     await SNS.publish({

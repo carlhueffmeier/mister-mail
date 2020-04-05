@@ -10,7 +10,10 @@ describe('send-email-use-case', () => {
   const fakeEmailRepository = ({
     create: jest.fn(),
   } as unknown) as EmailRepository;
-  const fakeSes = ({ sendEmail: jest.fn() } as unknown) as AWS.SES;
+  const fakeSes = ({
+    sendEmail: jest.fn(),
+    sendRawEmail: jest.fn(),
+  } as unknown) as AWS.SES;
   const configurationSet = 'configurationSet';
 
   describe('sendEmail', () => {

@@ -5,7 +5,7 @@
     "expression" : "pk = :uid and sk = :campaignid",
     "expressionValues" : {
       ":uid": $util.dynamodb.toDynamoDBJson($ctx.identity.sub),
-      ":campaignid": $util.dynamodb.toDynamoDBJson("C-$ctx.arguments.where.id")
+      ":campaignid": $util.dynamodb.toDynamoDBJson("C#$ctx.arguments.where.id")
     }
   },
   "select" : "ALL_ATTRIBUTES"

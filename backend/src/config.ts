@@ -8,6 +8,7 @@ export enum EnvKey {
   SNS_SES_EVENTS_TOPIC_ARN = 'SNS_SES_EVENTS_TOPIC_ARN',
   SNS_EMAILS_TOPIC_ARN = 'SNS_EMAILS_TOPIC_ARN',
   SES_CONFIGURATION_SET = 'SES_CONFIGURATION_SET',
+  API_GATEWAY_URL = 'API_GATEWAY_URL',
 }
 
 export const config = getConfig(EnvKey) as Record<EnvKey, string>;

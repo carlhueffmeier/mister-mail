@@ -23,8 +23,8 @@ export class EmailRepository {
   async create(createData: Readonly<Email>): Promise<EmailDynamoDbRecord> {
     const timestamp = getEpochSeconds();
     const newItem: EmailDynamoDbRecord = {
-      pk: createData.messageId,
-      sk: `mail`,
+      pk: createData.uid,
+      sk: ['M', createData.campaignId, createData.messageId].join('#'),
       uid: createData.uid,
       campaignId: createData.campaignId,
       messageId: createData.messageId,
@@ -41,33 +41,45 @@ export class EmailRepository {
     return newItem;
   }
 
-  async updateStatus(
-    messageId: string,
-    status: EmailStatus,
-  ): Promise<EmailDynamoDbRecord> {
-    const updateParams = {
+  async updateStatus(updateParams: {
+    uid: string;
+    campaignId: string;
+    messageId: string;
+    status: EmailStatus;
+  }): Promise<EmailDynamoDbRecord> {
+    const updateRecordParams = {
       TableName: this.tableName,
-      Key: { pk: messageId, sk: 'mail' },
+      Key: {
+        pk: updateParams.uid,
+        sk: ['M', updateParams.campaignId, updateParams.messageId].join('#'),
+      },
       UpdateExpression: 'set #status = :new_status',
       ExpressionAttributeNames: {
         '#status': 'status',
       },
       ExpressionAttributeValues: {
-        ':new_status': status,
+        ':new_status': updateParams.status,
       },
       ReturnValues: 'ALL_NEW',
     };
-    this.logger.debug('Updating email record', { updateParams });
+    this.logger.debug('Updating email record', { updateRecordParams });
     const result = await this.dynamoDbDocumentClient
-      .update(updateParams)
+      .update(updateRecordParams)
       .promise();
     return result.Attributes as EmailDynamoDbRecord;
   }
 
-  async findById(messageId: string): Promise<EmailDynamoDbRecord> {
+  async findOne(findParams: {
+    uid: string;
+    campaignId: string;
+    messageId: string;
+  }): Promise<EmailDynamoDbRecord> {
     const getItemParams: AWS.DynamoDB.DocumentClient.GetItemInput = {
       TableName: this.tableName,
-      Key: { pk: messageId, sk: 'mail' },
+      Key: {
+        pk: findParams.uid,
+        sk: ['M', findParams.campaignId, findParams.messageId].join('#'),
+      },
     };
     this.logger.debug('Fetching email record', { getItemParams });
     const result = await this.dynamoDbDocumentClient

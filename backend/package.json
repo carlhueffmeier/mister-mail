@@ -28,6 +28,7 @@
     "@middy/validator": "^1.0.0-beta.8",
     "axios": "^0.19.2",
     "http-errors": "^1.7.3",
+    "nodemailer": "^6.4.6",
     "source-map-support": "^0.5.10",
     "uuid": "^7.0.2"
   },
@@ -38,6 +39,7 @@
     "@types/http-errors": "^1.6.3",
     "@types/jest": "^25.1.4",
     "@types/node": "^10.12.18",
+    "@types/nodemailer": "^6.4.0",
     "@types/uuid": "^7.0.0",
     "@typescript-eslint/eslint-plugin": "^2.22.0",
     "@typescript-eslint/parser": "^2.22.0",

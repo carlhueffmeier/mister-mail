@@ -67,7 +67,7 @@ export const config = {
   identityPoolId: 'us-east-1:XXXXXXXXXX',
   userPoolId: 'us-east-1_XXXXXXXXXX',
   userPoolWebClientId: 'XXXXXXXXXX',
-}
+};
 ```
 
 6. Lastly deploy the client
@@ -136,20 +136,16 @@ The solution is easy enough.
 
 ## DynamoDB Schema
 
-| PK          | SK           | Content                                                 |
-| ----------- | ------------ | ------------------------------------------------------- |
-| U-userId    | C-campaignId | name, destinations, email stats and other campaign info |
-| M-messageId | mail         | user id, campaign id, message status                    |
-
-In case you are wondering why the mails are not in the user partition: I am too lazy to send raw emails just to attach a custom header containing the required info.
-If user and campaign would be included in the email event, it would save an additional Lambda invocation that updates the campaign stats and make life sparkly and wonderful.
+| PK     | SK                     | Content                                                 |
+| ------ | ---------------------- | ------------------------------------------------------- |
+| userId | C#campaignId           | name, destinations, email stats and other campaign info |
+| userId | M#campaignId#messageId | user id, campaign id, message status                    |
 
 ### Access Patterns
 
-| Get           | By                        | Using              |
-| ------------- | ------------------------- | ------------------ |
-| All campaigns | User Id                   | Query PK+SK prefix |
-| Campaign      | User Id + Campaign Id     | Query PK+SK        |
-| Message       | Campaign Id + Destination | ???                |
-
-The last access pattern is not currently supported. I.e. you can't see which email was opened / bounced etc. Obviously that doesn't make sense! It's a work in progress.
+| Get                  | By                                | Using                |
+| -------------------- | --------------------------------- | -------------------- |
+| All campaigns        | User Id                           | Query PK + SK prefix |
+| Campaign             | User Id + Campaign Id             | Query PK + SK        |
+| Messages by campaign | User Id + Campaign Id             | Query PK + SK prefix |
+| Message              | User Id + Campaign Id + MessageId | Query PK + SK        |
