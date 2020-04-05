@@ -19,7 +19,6 @@ custom:
   emails-topic: EmailsTopic-${self:service}-${self:custom.stage}
   emails-topic-arn: "arn:aws:sns:${self:custom.region}:#{AWS::AccountId}:${self:custom.emails-topic}"
   ses-configuration-set: SesConfigurationSet-${self:service}-${self:custom.stage}
-  webapp-s3-bucket: ${self:service}-${self:custom.stage}-webapp
   webpack:
     webpackConfig: ./webpack.config.js
     excludeFiles: ./**/*.spec.ts
