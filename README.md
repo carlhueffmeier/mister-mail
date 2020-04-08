@@ -7,7 +7,7 @@ Friendly mass mailer.
 As is the nature with architecture diagrams, expect this to be either aspirational or horribly out-of-date.
 
 <a href="https://drive.google.com/file/d/12FSTrMZs5HWeGkN_7h481OHAxGHd0cRv/view?usp=sharing">
-<img src="doc/mister-mail-aws-2020-04-08.vpd.png" width="640"></img>
+<img src="doc/mister-mail-aws-2020-04-08.png" width="640"></img>
 </a>
 
 ## Setup
