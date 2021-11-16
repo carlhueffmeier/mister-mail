@@ -46,7 +46,7 @@
     "amazon-cognito-identity-js": "^3.2.5",
     "amplify-graphql-docs-generator": "^2.1.12",
     "aws-api-gateway-client": "^0.3.3",
-    "aws-sdk": "^2.635.0",
+    "aws-sdk": "^2.814.0",
     "eslint": "^6.8.0",
     "eslint-config-prettier": "^6.10.0",
     "eslint-plugin-prettier": "^3.1.2",
